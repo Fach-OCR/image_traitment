@@ -52,10 +52,12 @@ void surface_to_grayscale(SDL_Surface* surface)
 
 void resize_image(SDL_Surface* surface)
 {
-    if (surface->w > 800)
+    double w = surface->w;
+    double h = surface->h;
+    if (w > 800)
         return;
 
-    double image_ratio
+    double ratio = (w >= h ? w / h : h / w);
 }
 
 int main(int argc, char** argv)
@@ -67,10 +69,11 @@ int main(int argc, char** argv)
     // Initializes the SDL.
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
-    
+
     // Impot the surface from the image in argument
     SDL_Surface* surface = load_image(argv[1]);
 
+    resize_image(surface);
     // Convert the surface into grayscale
     surface_to_grayscale(surface);
 
