@@ -1,6 +1,23 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  gaussian_filter.c
+ *
+ *    Description: Perform gaussian filter on an image
+ *
+ *        Version:  1.0
+ *        Created:  09/28/2022 07:40:29 PM
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Paolo.Wattebled
+ *   Organization: Fach'OCR
+ *
+ * =====================================================================================
+ */
+#include <string.h>
 #include <err.h>
 #include <SDL2/SDL.h>
-#include <SDL/SDL_gfx>
 #include <SDL2/SDL_image.h>
 
 
@@ -58,6 +75,18 @@ void resize_image(SDL_Surface* surface)
         return;
 
     double ratio = (w >= h ? w / h : h / w);
+
+
+    double n_w = (h * 800) / w;
+}
+
+void change_res_name(char[] dest, char[] arg)
+{
+    dest[0] = 'r';
+    dest[1] = 'e';
+    dest[2] = 's';
+    dest[3] = '_';
+    strcat(dest, arg);
 }
 
 int main(int argc, char** argv)
@@ -73,13 +102,18 @@ int main(int argc, char** argv)
     // Impot the surface from the image in argument
     SDL_Surface* surface = load_image(argv[1]);
 
-    resize_image(surface);
+    //resize_image(surface);
     // Convert the surface into grayscale
     surface_to_grayscale(surface);
 
+    //change the name of the file where the image will be saved
+    char dest[sizeof(argv[1]) + 5];
+    change_res_name(dest, argv[1]);
 
+    //save the image
+    SDL_SaveBMP(surface, dest);
 
-    // Destroy the objects
+    // Destroy the objects to free memory
     SDL_FreeSurface(surface);
     SDL_Quit();
 
