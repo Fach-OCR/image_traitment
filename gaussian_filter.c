@@ -17,9 +17,9 @@
  */
 #include <string.h>
 #include <err.h>
+#include <SDL/SDL_rotozoom.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
 
 
 // Loads an image in a surface.
@@ -70,23 +70,11 @@ void surface_to_grayscale(SDL_Surface* surface)
 void resize_image(SDL_Surface* surface)
 {
     double w = surface->w;
-    double h = surface->h;
     if (w > 800)
         return;
 
-    double ratio = (w >= h ? w / h : h / w);
-
-
-    double n_w = (h * 800) / w;
-}
-
-void change_res_name(char[] dest, char[] arg)
-{
-    dest[0] = 'r';
-    dest[1] = 'e';
-    dest[2] = 's';
-    dest[3] = '_';
-    strcat(dest, arg);
+    double zoom = 8 / w;
+    SDL_Surface* surf = rotozoomSurface(surface, 0, zoom, 1);
 }
 
 int main(int argc, char** argv)
@@ -103,12 +91,14 @@ int main(int argc, char** argv)
     SDL_Surface* surface = load_image(argv[1]);
 
     //resize_image(surface);
+    resize_image(surface);
+
     // Convert the surface into grayscale
     surface_to_grayscale(surface);
 
     //change the name of the file where the image will be saved
-    char dest[sizeof(argv[1]) + 5];
-    change_res_name(dest, argv[1]);
+    char dest[40] = "res_";
+    strcat(dest, argv[1]);
 
     //save the image
     SDL_SaveBMP(surface, dest);
