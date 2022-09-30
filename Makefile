@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image` -g
-LDLIBS = `pkg-config --libs sdl2 SDL2_image SDL_gfx`
+LDLIBS = `pkg-config --libs sdl2 SDL2_image`
 
 SRC = gaussian_filter.c
 OBJ = ${SRC:.c=.o}

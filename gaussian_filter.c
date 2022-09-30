@@ -15,11 +15,10 @@
  *
  * =====================================================================================
  */
-#include <string.h>
-#include <err.h>
-#include <SDL/SDL_rotozoom.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <string.h>
+#include <err.h>
 
 
 // Loads an image in a surface.
@@ -74,7 +73,7 @@ void resize_image(SDL_Surface* surface)
         return;
 
     double zoom = 8 / w;
-    SDL_Surface* surf = rotozoomSurface(surface, 0, zoom, 1);
+   // SDL_Surface* surf = rotozoomSurface(surface, 0, zoom, 1);
 }
 
 int main(int argc, char** argv)
@@ -103,6 +102,7 @@ int main(int argc, char** argv)
     //save the image
     SDL_SaveBMP(surface, dest);
 
+    free(dest);
     // Destroy the objects to free memory
     SDL_FreeSurface(surface);
     SDL_Quit();
