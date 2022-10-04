@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image` -g
-LDLIBS = `pkg-config --libs sdl2 SDL2_image`
+LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2
 
 SRC = gaussian_filter.c
 OBJ = ${SRC:.c=.o}
@@ -8,6 +8,7 @@ EXE = ${SRC:.c=}
 
 gaussian: gaussian_filter.o
 	${CC} ${CFLAGS} $^ -o $@ ${LDLIBS}
+	./gaussian test.png
 
 .PHONY: clean
 

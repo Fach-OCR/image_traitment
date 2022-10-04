@@ -19,8 +19,7 @@
 #include <SDL2/SDL_image.h>
 #include <string.h>
 #include <err.h>
-
-
+#include <math.h>
 // Loads an image in a surface.
 // The format of the surface is SDL_PIXELFORMAT_RGB888.
 //
@@ -66,15 +65,57 @@ void surface_to_grayscale(SDL_Surface* surface)
     SDL_UnlockSurface(surface);
 }
 
+Uint32 pixelmatrix_to_medpixel(Uint32* mat, SDL_PixelFormat* format, size_t size)
+{
+    int r = 0, g = 0, b = 0;
+    int a = size * size;
+    for (int i = 0; i < a; ++i)
+    {
+        Uint8 tmp_r = 0, tmp_g = 0, tmp_b = 0;
+        SDL_GetRGB(mat[i], format, &tmp_r, &tmp_g, &tmp_b);
+        r += tmp_r;
+        g += tmp_g;
+        b += tmp_b;
+    }
+
+    return SDL_MapRGB(format, r / a, g / a, b / a);
+}
+
+
 void resize_image(SDL_Surface* surface)
 {
-    double w = surface->w;
-    if (w > 800)
+    SDL_LockSurface(surface);
+    int h = surface->h;
+    int w = surface->w;
+    Uint32* sur_pixels = surface->pixels;
+    int ratio = round((h > w ? h : w) / 600);
+    if (ratio <= 1) //Don't do anything if the image is already the bound
         return;
 
-    double zoom = 8 / w;
-   // SDL_Surface* surf = rotozoomSurface(surface, 0, zoom, 1);
+    SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, w/ratio, h/ratio, 32, SDL_PIXELFORMAT_RGBA32);
+    SDL_LockSurface(new_surface);
+    Uint32* new_pixels = new_surface->pixels;
+
+    Uint32 *tmp_mat = (Uint32 *)malloc(ratio * ratio * sizeof(Uint32));
+
+    for (int i = 0; i < w - ratio; i += ratio)
+    {
+        for (int j = 0; j < h - ratio; j += ratio)
+        {
+            for (int _i = 0; _i < ratio; ++_i)
+                for (int _j = 0; _j < ratio; ++_j)
+                    tmp_mat[_i * ratio + _j] = sur_pixels[(_i - j) * h + (_j - j)];
+
+            new_pixels[(i / ratio) * new_surface->w + (j / ratio)] = pixelmatrix_to_medpixel(tmp_mat, new_surface->format, ratio); //todo
+        }
+    }
+    SDL_UnlockSurface(new_surface);
+    SDL_UnlockSurface(surface);
+    printf("Here");
+    *surface = *new_surface;
+    SDL_FreeSurface(surface);
 }
+
 
 int main(int argc, char** argv)
 {
@@ -89,11 +130,12 @@ int main(int argc, char** argv)
     // Impot the surface from the image in argument
     SDL_Surface* surface = load_image(argv[1]);
 
-    //resize_image(surface);
     resize_image(surface);
+
 
     // Convert the surface into grayscale
     surface_to_grayscale(surface);
+
 
     //change the name of the file where the image will be saved
     char dest[40] = "res_";
@@ -102,7 +144,6 @@ int main(int argc, char** argv)
     //save the image
     SDL_SaveBMP(surface, dest);
 
-    free(dest);
     // Destroy the objects to free memory
     SDL_FreeSurface(surface);
     SDL_Quit();
