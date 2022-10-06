@@ -37,7 +37,7 @@ SDL_Surface* load_image(const char* path)
 //
 // pixel_color: Color of the pixel to convert in the RGB format.
 // format: Format of the pixel used by the surface.
-Uint32 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat* format)
+Uint32 pixel_to_grayscale(Uint32 pixel_color, SDL_PixelFormat *format)
 {
     Uint8 r, g, b;
     SDL_GetRGB(pixel_color, format, &r, &g, &b);
@@ -87,8 +87,9 @@ void resize_image(SDL_Surface* surface)
     SDL_LockSurface(surface);
     int h = surface->h;
     int w = surface->w;
-    Uint32* sur_pixels = surface->pixels;
-    int ratio = round((h > w ? h : w) / 600);
+    Uint32* prev_pixels = surface->pixels;
+    int ratio = round((h > w ? h : w) / 300);
+    printf("ratio = %i\n", ratio);
     if (ratio <= 1) //Don't do anything if the image is already the bound
         return;
 
@@ -103,17 +104,22 @@ void resize_image(SDL_Surface* surface)
         for (int j = 0; j < h - ratio; j += ratio)
         {
             for (int _i = 0; _i < ratio; ++_i)
+            {
                 for (int _j = 0; _j < ratio; ++_j)
-                    tmp_mat[_i * ratio + _j] = sur_pixels[(_i - j) * h + (_j - j)];
+                {
+                    printf("Here\n");
+                    tmp_mat[_i * ratio + _j] = prev_pixels[(_i - j) * h + (_j - j)];
+                }
+            }
 
             new_pixels[(i / ratio) * new_surface->w + (j / ratio)] = pixelmatrix_to_medpixel(tmp_mat, new_surface->format, ratio); //todo
         }
     }
     SDL_UnlockSurface(new_surface);
     SDL_UnlockSurface(surface);
-    printf("Here");
     *surface = *new_surface;
     SDL_FreeSurface(surface);
+    free(tmp_mat);
 }
 
 
