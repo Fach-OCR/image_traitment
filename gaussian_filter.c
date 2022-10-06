@@ -65,39 +65,48 @@ void surface_to_grayscale(SDL_Surface* surface)
     SDL_UnlockSurface(surface);
 }
 
-Uint32 pixelmatrix_to_medpixel(Uint32* mat, SDL_PixelFormat* format, size_t size)
+Uint32 pixelmatrix_to_medpixel(Uint32 **mat, SDL_PixelFormat* format, int ratio)
 {
     int r = 0, g = 0, b = 0;
-    int a = size * size;
-    for (int i = 0; i < a; ++i)
+    for (int i = 0; i < ratio; ++i)
     {
-        Uint8 tmp_r = 0, tmp_g = 0, tmp_b = 0;
-        SDL_GetRGB(mat[i], format, &tmp_r, &tmp_g, &tmp_b);
-        r += tmp_r;
-        g += tmp_g;
-        b += tmp_b;
+        for (int j = 0; j < ratio; ++j)
+        {
+            Uint8 tmp_r = 0, tmp_g = 0, tmp_b = 0;
+            SDL_GetRGB(mat[i][j], format, &tmp_r, &tmp_g, &tmp_b);
+            r += tmp_r;
+            g += tmp_g;
+            b += tmp_b;
+        }
     }
 
+    int a = ratio * ratio;
     return SDL_MapRGB(format, r / a, g / a, b / a);
 }
 
 
 void resize_image(SDL_Surface* surface)
 {
-    SDL_LockSurface(surface);
     int h = surface->h;
     int w = surface->w;
-    Uint32* prev_pixels = surface->pixels;
     int ratio = round((h > w ? h : w) / 300);
+
     printf("ratio = %i\n", ratio);
+
     if (ratio <= 1) //Don't do anything if the image is already the bound
         return;
 
     SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, w/ratio, h/ratio, 32, SDL_PIXELFORMAT_RGBA32);
+    printf("dim new surface w = %i, h = %i\n", new_surface->w, new_surface->h);
     SDL_LockSurface(new_surface);
+    SDL_LockSurface(surface);
+
+    Uint32* prev_pixels = surface->pixels;
     Uint32* new_pixels = new_surface->pixels;
 
-    Uint32 *tmp_mat = (Uint32 *)malloc(ratio * ratio * sizeof(Uint32));
+    Uint32 **tmp_mat = (Uint32**)malloc(ratio * sizeof(Uint32));
+    for (int i = 0; i < ratio; i++)
+        tmp_mat[i] = (Uint32*)malloc(ratio * sizeof(Uint32));
 
     for (int i = 0; i < w - ratio; i += ratio)
     {
@@ -107,19 +116,24 @@ void resize_image(SDL_Surface* surface)
             {
                 for (int _j = 0; _j < ratio; ++_j)
                 {
-                    printf("Here\n");
-                    tmp_mat[_i * ratio + _j] = prev_pixels[(_i - j) * h + (_j - j)];
+                    printf("Here i = %i   j = %i   _i = %i   _j = %i   \n", i, j, _i, _j);
+                    tmp_mat[_i][_j] = prev_pixels[(i + _i) * h + (j + _j)];
                 }
             }
-
-            new_pixels[(i / ratio) * new_surface->w + (j / ratio)] = pixelmatrix_to_medpixel(tmp_mat, new_surface->format, ratio); //todo
+            printf("Here new i = %i   new j = %i \n", i/ratio, j/ratio);
+            new_pixels[(int)(i / ratio) * new_surface->w + (int)(j / ratio)] = pixelmatrix_to_medpixel(tmp_mat, new_surface->format, ratio);
         }
     }
+
     SDL_UnlockSurface(new_surface);
     SDL_UnlockSurface(surface);
+
     *surface = *new_surface;
+
     SDL_FreeSurface(surface);
-    free(tmp_mat);
+//for (int i = 0; i < ratio; ++i)
+//        free(tmp_mat[i]);
+//    free(tmp_mat);
 }
 
 

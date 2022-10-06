@@ -8,7 +8,7 @@ EXE = ${SRC:.c=}
 
 gaussian: gaussian_filter.o
 	${CC} ${CFLAGS} $^ -o $@ ${LDLIBS}
-	./gaussian test.png
+	#./gaussian test.png
 
 .PHONY: clean
 
