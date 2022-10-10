@@ -8,6 +8,10 @@ EXE = ${SRC:.c=}
 
 gaussian: gaussian_filter.o utilis_image.o
 	${CC} ${CFLAGS} $^ -o $@ ${LDLIBS}
+<<<<<<< HEAD
+=======
+	#./gaussian test.png
+>>>>>>> 72574103ec6aa8c15a1b0f65f637a75d7ba317b3
 
 .PHONY: clean
 
