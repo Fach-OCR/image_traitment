@@ -17,6 +17,7 @@
  */
 #include "utilis_image.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <err.h>
 
@@ -35,8 +36,11 @@ void surface_to_grayscale(Image *image)
             r = pixels[i][j].r;
             g = pixels[i][j].g;
             b = pixels[i][j].b;
-            int average = 0.3*r + 0.59*g + 0.11*b;
-            r = g = b = average;
+            unsigned int average = 0.3*r + 0.59*g + 0.11*b;
+            printf("here\n");
+            pixels[i][j].r = average;
+            pixels[i][j].g = average;
+            pixels[i][j].b = average;
         }
     }
 }
@@ -54,7 +58,6 @@ int main(int argc, char** argv)
     image.path = argv[1];
 
     SDL_FreeSurface(surface);
-
 
     // Convert the image into grayscale
     surface_to_grayscale(&image);

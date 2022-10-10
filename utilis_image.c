@@ -16,8 +16,8 @@
  *
  * =====================================================================================
  */
-#include <SDL2/SDL2.h>
-#include <SDL2/SDL2_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <err.h>
 
 typedef struct Pixel
