@@ -19,6 +19,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct Pixel
 {
@@ -107,6 +110,34 @@ SDL_Surface *create_surface(Image *image)
     }
 
     return surface;
+}
+
+
+Image copy_image(Image *image)
+{
+    Image new_image = {
+        .width = image->width,
+        .height = image->height,
+        .pixels = NULL,
+        .path = NULL
+    };
+
+    new_image.pixels = (Pixel**)calloc(new_image.height, sizeof(Pixel *));
+    for (unsigned int x = 0; x < new_image.height; ++x)
+    {
+        new_image.pixels[x] = (Pixel*)calloc(new_image.width, sizeof(Pixel));
+        if (new_image.pixels[x] == NULL)
+            errx(EXIT_FAILURE, "Error while allocating pixels pointers for the image");
+    }
+
+    new_image.path = calloc(strlen(image->path) + 1, sizeof(char));
+    strcpy(new_image.path, image->path);
+
+    for (unsigned int i = 0; i < image->height; ++i)
+        for (unsigned int j = 0; j < image->width; ++j)
+            new_image.pixels[i][j] = image->pixels[i][j];
+
+    return new_image;
 }
 
 

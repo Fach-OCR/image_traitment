@@ -36,4 +36,6 @@ SDL_Surface *create_surface(Image *image);
 void freeImage(Image *image);
 
 
+Image copy_image(Image *image);
+
 #endif
