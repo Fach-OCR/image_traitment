@@ -8,7 +8,6 @@
 typedef struct Pixel
 {
     unsigned int r, g, b;
-    struct Pixel *matrix;
 } Pixel;
 
 
@@ -16,7 +15,6 @@ typedef struct Image
 {
     unsigned int width;
     unsigned int height;
-    double averageColor;
     Pixel **pixels;
     char *path;
 } Image;

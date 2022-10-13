@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -O3 `pkg-config --cflags sdl2 SDL2_image` -g
+CFLAGS = -Wall -Wextra `pkg-config --cflags sdl2 SDL2_image` -g
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2
 
 SRC = gaussian_filter.c utilis_image.c
