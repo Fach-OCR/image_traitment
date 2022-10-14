@@ -57,9 +57,9 @@ Image gaussian_blur(Image *image, int radius)
          kernel[i] = calloc(kwidht, sizeof(double));
      double sum = 0.0;
 
-     for (double x = -radius; x < radius; ++x) 
+     for (double x = -radius; x < radius; ++x)
      {
-         for (double y = -radius; y < radius; ++y) 
+         for (double y = -radius; y < radius; ++y)
          {
              double exponum = -(x * x + y * y);
              double expodeno = 2 * sigma * sigma;
@@ -71,7 +71,7 @@ Image gaussian_blur(Image *image, int radius)
          }
      }
 
-     for (int x = 0; x < kwidht; ++x) 
+     for (int x = 0; x < kwidht; ++x)
          for (int y = 0; y < kwidht; ++y)
              kernel[x][y] /= sum;
 
@@ -83,9 +83,9 @@ Image gaussian_blur(Image *image, int radius)
             double g = 0.0;
             double b = 0.0;
 
-            for (int _x = -radius; _x < radius; ++_x) 
+            for (int _x = -radius; _x < radius; ++_x)
             {
-                for (int _y = -radius; _y < radius; ++_y) 
+                for (int _y = -radius; _y < radius; ++_y)
                 {
                     double kvalue = kernel[_x + radius][_y + radius];
 
@@ -99,7 +99,11 @@ Image gaussian_blur(Image *image, int radius)
             new_image.pixels[x][y].b = b;
         }
     }
-    
+
+    for (unsigned int i = 0; i < kwidht; ++i)
+        free(kernel[i]);
+    free(kernel);
+
     return new_image;
 }
 
