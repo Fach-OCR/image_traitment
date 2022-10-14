@@ -77,7 +77,6 @@ Image create_image(SDL_Surface *surface, int width, int height)
             image.pixels[x][y].r = rgb.r;
             image.pixels[x][y].g = rgb.g;
             image.pixels[x][y].b = rgb.b;
-
         }
     }
 

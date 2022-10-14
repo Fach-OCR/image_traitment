@@ -45,10 +45,8 @@ void surface_to_grayscale(Image *image)
     }
 }
 
-Image gaussian_blur(Image *image, int radius)
+void gaussian_blur(Image *image, int radius)
 {
-    Image new_image = copy_image(image);
-
      double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
      int kwidht = (2 * round(radius)) + 1;
 
@@ -75,6 +73,7 @@ Image gaussian_blur(Image *image, int radius)
          for (int y = 0; y < kwidht; ++y)
              kernel[x][y] /= sum;
 
+    Image tmp_image = copy_image(image);
     for (unsigned int x = radius; x < image->height - radius; ++x)
     {
         for (unsigned int y = radius; y < image->width - radius; ++y)
@@ -89,22 +88,22 @@ Image gaussian_blur(Image *image, int radius)
                 {
                     double kvalue = kernel[_x + radius][_y + radius];
 
-                    r += image->pixels[x - _x][y - _y].r * kvalue;
-                    g += image->pixels[x - _x][y - _y].g * kvalue;
-                    b += image->pixels[x - _x][y - _y].b * kvalue;
+                    r += tmp_image.pixels[x - _x][y - _y].r * kvalue;
+                    g += tmp_image.pixels[x - _x][y - _y].g * kvalue;
+                    b += tmp_image.pixels[x - _x][y - _y].b * kvalue;
                 }
             }
-            new_image.pixels[x][y].r = r;
-            new_image.pixels[x][y].g = g;
-            new_image.pixels[x][y].b = b;
+            image->pixels[x][y].r = r;
+            image->pixels[x][y].g = g;
+            image->pixels[x][y].b = b;
         }
     }
 
-    for (unsigned int i = 0; i < kwidht; ++i)
+    for (int i = 0; i < kwidht; ++i)
         free(kernel[i]);
     free(kernel);
 
-    return new_image;
+    freeImage(&tmp_image);
 }
 
 
@@ -132,8 +131,7 @@ int main(int argc, char** argv)
 
     // Convert the image into grayscale
     surface_to_grayscale(&image);
-    
-    image = gaussian_blur(&image, 11);
+    gaussian_blur(&image, 3);
 
     // Save the image
     SDL_Surface* final_surface = create_surface(&image);
