@@ -1,13 +1,14 @@
 CC = gcc
-CFLAGS = -Wall -Wextra `pkg-config --cflags sdl2 SDL2_image` -fsanitize=address
-LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm -fsanitize=address
+CFLAGS = -Wall -Wextra `pkg-config --cflags sdl2 SDL2_image` -g #-fsanitize=address
+LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
+LDFLAGS = #-fsanitize=address
 
-SRC = gaussian_filter.c utilis_image.c
+SRC = gaussian_filter.c utilis_image.c sobel.c main.c
 OBJ = ${SRC:.c=.o}
 EXE = ${SRC:.c=}
 
-gaussian: gaussian_filter.o utilis_image.o
-	${CC} ${CFLAGS} $^ -o $@ ${LDLIBS}
+gaussian: gaussian_filter.o utilis_image.o sobel.o main.o
+	${CC} ${CFLAGS} ${LDFLAGS} $^ -o $@ ${LDLIBS}
 #	./gaussian test.png
 
 .PHONY: clean
@@ -19,3 +20,5 @@ clean:
 	${RM} res_*
 	${RM} .ut*
 	${RM} .gauss*
+	${RM} .Make*
+	${RM} .main*
