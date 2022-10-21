@@ -21,8 +21,6 @@
 #include <err.h>
 
 
-#define PI 3.142857
-
 void surface_to_grayscale(Image *image)
 {
     Pixel **pixels = image->pixels;
@@ -38,16 +36,15 @@ void surface_to_grayscale(Image *image)
             g = pixels[i][j].g;
             b = pixels[i][j].b;
             unsigned int average = 0.3*r + 0.59*g + 0.11*b;
-            pixels[i][j].r = average;
-            pixels[i][j].g = average;
-            pixels[i][j].b = average;
+            set_all_pixel(image, i, j, average);
         }
     }
 }
 
 void gaussian_blur(Image *image, int radius)
 {
-     double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
+     //double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
+     double sigma = 0.5;
      int kwidht = (2 * round(radius)) + 1;
 
      double **kernel = calloc(kwidht, sizeof(double *));
@@ -62,7 +59,7 @@ void gaussian_blur(Image *image, int radius)
              double exponum = -(x * x + y * y);
              double expodeno = 2 * sigma * sigma;
              double expression = exp(exponum / expodeno);
-             double kvalue = expression / (2 * PI * sigma * sigma);
+             double kvalue = expression / (2 * M_PI * sigma * sigma);
 
              kernel[(int)x + radius][(int)y + radius] = kvalue;
              sum += kvalue;
@@ -78,24 +75,17 @@ void gaussian_blur(Image *image, int radius)
     {
         for (unsigned int y = radius; y < image->width - radius; ++y)
         {
-            double r = 0.0;
-            double g = 0.0;
-            double b = 0.0;
+            double val = 0.0;
 
             for (int _x = -radius; _x < radius; ++_x)
             {
                 for (int _y = -radius; _y < radius; ++_y)
                 {
                     double kvalue = kernel[_x + radius][_y + radius];
-
-                    r += tmp_image.pixels[x - _x][y - _y].r * kvalue;
-                    g += tmp_image.pixels[x - _x][y - _y].g * kvalue;
-                    b += tmp_image.pixels[x - _x][y - _y].b * kvalue;
+                    val += tmp_image.pixels[x - _x][y - _y].r * kvalue;
                 }
             }
-            image->pixels[x][y].r = r;
-            image->pixels[x][y].g = g;
-            image->pixels[x][y].b = b;
+            set_all_pixel(image, x, y, val);
         }
     }
 

@@ -33,6 +33,9 @@ Image create_image(SDL_Surface *surface, int width, int height);
 SDL_Surface *create_surface(Image *image);
 
 
+void set_all_pixel(Image *image, int i, int j, unsigned int val);
+
+
 void freeImage(Image *image);
 
 

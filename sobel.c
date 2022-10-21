@@ -56,8 +56,8 @@ void edges(Image *image)
     Gy[2][2] = 1;
 
     // define variables
-    int Gx_red, Gx_green, Gx_blue;
-    int Gy_red, Gy_green, Gy_blue;
+    int Gx_val;
+    int Gy_val;
 
     // define temporary array
     Image edge_image = copy_image(image);
@@ -70,10 +70,7 @@ void edges(Image *image)
         // loop through rows
         for (int j = 0; j < width; ++j)
         {
-            // set/reset sobel values for each colour channel
-            Gx_red = Gx_green = Gx_blue = 0;
-            Gy_red = Gy_green = Gy_blue = 0;
-
+            Gx_val = Gy_val = 0;
             // 3x3 kernal around [i][j]
             for (int x = -1; x < 2; x++)
             {
@@ -85,22 +82,13 @@ void edges(Image *image)
                         int kx = x + 1;
                         int sy = y + 1;
 
-                        // Gx kernal
-                        Gx_red += (image->pixels[i + x][j + y].r * Gx[kx][sy]);
-                        Gx_green += (image->pixels[i + x][j + y].g * Gx[kx][sy]);
-                        Gx_blue += (image->pixels[i + x][j + y].b * Gx[kx][sy]);
-
-                        // Gy kernal
-                        Gy_red += (image->pixels[i + x][j + y].r * Gy[kx][sy]);
-                        Gy_green += (image->pixels[i + x][j + y].g * Gy[kx][sy]);
-                        Gy_blue += (image->pixels[i + x][j + y].b * Gy[kx][sy]);
+                        Gx_val += (image->pixels[i + x][j + y].r * Gx[kx][sy]);
+                        Gy_val += (image->pixels[i + x][j + y].r * Gy[kx][sy]);
                     }
                 }
             }
             // Perform sobel operatation and assign each colour channel value to new array
-            edge_image.pixels[i][j].r = sobel(Gx_red, Gy_red);
-            edge_image.pixels[i][j].g = sobel(Gx_green, Gy_green);
-            edge_image.pixels[i][j].b = sobel(Gx_blue, Gy_blue);
+            set_all_pixel(&edge_image, i, j, sobel(Gx_val, Gy_val));
         }
     }
     // assign temp array to origional array for output

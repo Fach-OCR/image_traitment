@@ -210,6 +210,14 @@ void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel)
 }
 
 
+void set_all_pixel(Image *image, int i, int j, unsigned int val)
+{
+    image->pixels[i][j].r = val;
+    image->pixels[i][j].g = val;
+    image->pixels[i][j].b = val;
+}
+
+
 void freeImage(Image *image)
 {
     free(image->path);
@@ -218,9 +226,3 @@ void freeImage(Image *image)
 
     free(image->pixels);
 }
-
-
-
-
-
-

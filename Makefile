@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra `pkg-config --cflags sdl2 SDL2_image` -g #-fsanitize=address
+CFLAGS = -Wall -Wextra `pkg-config --cflags sdl2 SDL2_image` -Og -g
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
 LDFLAGS = #-fsanitize=address
 
@@ -22,3 +22,4 @@ clean:
 	${RM} .gauss*
 	${RM} .Make*
 	${RM} .main*
+	${RM} .sob*
