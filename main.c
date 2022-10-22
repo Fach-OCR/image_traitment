@@ -8,10 +8,11 @@ int main(int argc, char** argv)
 {
     // Checks the number of arguments.
     if (argc != 2)
-        errx(EXIT_FAILURE, "Usage: image-file");
+        errx(EXIT_FAILURE, "Usage: ./gaussian 'image_name' ");
 
     // Impot the surface from the image in argument
     SDL_Surface* surface = IMG_Load(argv[1]);
+
 
     // Create an Image struct from the input surface
     Image image = create_image(surface, surface->w, surface->h);
