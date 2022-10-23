@@ -2,7 +2,7 @@
 #define SOBEL_H
 
 
-int sobel(int Gx, int Gy);
+void sobel(Image *image, int Gx, int Gy, int i, int j);
 
 void edges(Image *image);
 

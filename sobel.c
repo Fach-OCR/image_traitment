@@ -19,46 +19,104 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
+#include <time.h>
 
-int sobel(int Gx, int Gy)
+int Gx[3][3] = {
+    {-1, 0, 1},
+    {-2, 0, 2},
+    {-1, 0, 1}
+};
+
+int Gy[3][3] = {
+    { 1,  2,  1},
+    { 0,  0,  0},
+    {-1, -2, -1}
+};
+
+
+void sobel(Image *image, int Gx, int Gy, int i, int j)
 {
     int n = sqrt(Gx * Gx + Gy * Gy);
     if (n > 255)
         n = 255;
 
-    return n;
-
+    set_all_pixel(image, i, j, n);
 }
+
+void non_max_suppresion(Image *sobel_image, Image *image)
+{
+    int height = image->height;
+    int width = image->width;
+
+
+    for (int i = 1; i < height - 1; ++i)
+    {
+        for (int j = 1; j < width - 1; ++j)
+        {
+            int Gx_val = 0;
+            int Gy_val = 0;
+            // 3x3 kernal around [i][j]
+            for (int x = -1; x < 2; x++)
+            {
+                for (int y = -1; y < 2; y++)
+                {
+                    if (i + x < height && i + x > 0 && j + y < width && j + y > 0)
+                    {
+                        int kx = x + 1;
+                        int sy = y + 1;
+
+                        Gx_val += (image->pixels[i + x][j + y].r * Gx[kx][sy]);
+                        Gy_val += (image->pixels[i + x][j + y].r * Gy[kx][sy]);
+                    }
+                }
+            }
+
+            double theta = atan2(Gx_val, Gy_val) * (360.0 / (2.0 * M_PI));
+
+            if ((theta <= 22.5 && theta >= -22.5) || (theta <= -157.5) || (theta >= 157.5))
+            {
+                if (sobel_image->pixels[i][j - 1].r >= sobel_image->pixels[i][j].r ||
+                        (sobel_image->pixels[i][j + 1].r >= sobel_image->pixels[i][j].r))
+                    set_all_pixel(image, i, j, 0);
+            }
+            else if ((theta > 22.5 && theta <= 67.5) || (theta > -157.5 && theta <= -112.5))
+            {
+                if (sobel_image->pixels[i - 1][j].r >= sobel_image->pixels[i][j].r ||
+                        (sobel_image->pixels[i + 1][j].r >= sobel_image->pixels[i][j].r))
+                    set_all_pixel(image, i, j, 0);
+            }
+            else if ((theta > 67.5 && theta <= 112.5) || (theta >= -112.5 && theta < -67.5))
+            {
+                if (sobel_image->pixels[i + 1][j - 1].r >= sobel_image->pixels[i][j].r ||
+                        (sobel_image->pixels[i - 1][j + 1].r >= sobel_image->pixels[i][j].r))
+                    set_all_pixel(image, i, j, 0);
+            }
+            else if ((theta >= -67.5 && theta < -22.5) || (theta > 112.5 && theta < 157.5))
+            {
+                if (sobel_image->pixels[i - 1][j - 1].r >= sobel_image->pixels[i][j].r ||
+                        (sobel_image->pixels[i + 1][j + 1].r >= sobel_image->pixels[i][j].r))
+                    set_all_pixel(image, i, j, 0);
+            }
+            else
+                return;
+        }
+    }
+}
+
 
 void edges(Image *image)
 {
-    // define kernals
-    int Gx[3][3] = {
-        {1, 0, -1},
-        {2, 0, -2},
-        {1, 0, -1}
-    };
+    int height = image->height;
+    int width = image->width;
 
-    int Gy[3][3] = {
-        { 1,  2,  1},
-        { 0,  0,  0},
-        {-1, -2, -1}
-    };
-
-    // define variables
     int Gx_val;
     int Gy_val;
 
-    // define temporary array
-    Image edge_image = copy_image(image);
-
-    int height = image->height;
-    int width = image->width;
-    // loop through columns
-    for (int i = 0; i < height; ++i)
+    // define temporary image
+    Image sobel_image = copy_image(image);
+    for (int i = 1; i < height - 1; ++i)
     {
-        // loop through rows
-        for (int j = 0; j < width; ++j)
+        for (int j = 1; j < width - 1; ++j)
         {
             Gx_val = Gy_val = 0;
             // 3x3 kernal around [i][j]
@@ -77,16 +135,15 @@ void edges(Image *image)
                     }
                 }
             }
-            // Perform sobel operatation and assign each colour channel value to new array
-            set_all_pixel(&edge_image, i, j, sobel(Gx_val, Gy_val));
+            // Perform sobel operatation
+            sobel(&sobel_image, Gx_val, Gy_val,i , j);
         }
     }
-    // assign temp array to origional array for output
-    for (int i = 0; i < height; i++)
-        for (int j = 0; j < width; j++)
-            image->pixels[i][j] = edge_image.pixels[i][j];
 
-    freeImage(&edge_image);
+    // Perform non_max_suppresion operatation
+    non_max_suppresion(&sobel_image, image);
+
+    freeImage(&sobel_image);
 }
 
 

@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra `pkg-config --cflags sdl2 SDL2_image` -O3
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
-LDFLAGS = #-fsanitize=address
+LDFLAGS = -g #-fsanitize=address
 
 SRC = gaussian_filter.c utilis_image.c sobel.c main.c
 OBJ = ${SRC:.c=.o}

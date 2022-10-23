@@ -43,8 +43,7 @@ void surface_to_grayscale(Image *image)
 
 void gaussian_blur(Image *image, int radius)
 {
-     //double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
-     double sigma = 0.5;
+     double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
      int kwidht = (2 * round(radius)) + 1;
 
      double **kernel = calloc(kwidht, sizeof(double *));
