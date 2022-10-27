@@ -8,6 +8,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <err.h>
+#include <stdio.h>
 //#include <stdbool.h>
 
 void draw(SDL_Renderer* renderer, SDL_Texture* texture)
@@ -18,7 +19,7 @@ void draw(SDL_Renderer* renderer, SDL_Texture* texture)
 }
 
 
-void event_loop(SDL_Renderer* renderer, Image* image)
+void event_loop(SDL_Renderer* renderer, Image* image1)
 {
     SDL_Event e;
 
@@ -28,11 +29,14 @@ void event_loop(SDL_Renderer* renderer, Image* image)
 
     SDL_Surface* surface;
     SDL_Texture* texture;
+    Image image;
 
     while( 1 )
     {
         SDL_WaitEvent(&e);
-        if( e.type == SDL_KEYDOWN )
+        if (e.type == SDL_QUIT)
+            break;
+        else if( e.type == SDL_KEYDOWN )
         {
             switch( e.key.keysym.sym )
             {
@@ -40,10 +44,15 @@ void event_loop(SDL_Renderer* renderer, Image* image)
                     if (highthresh < 251)
                         highthresh += 5;
 
-                    double_threshold(image, highthresh, lowtresh);
-                    hysteris(image);
+                    printf("highthresh = %i\n", highthresh);
+                    printf("lowtrsh = %i\n", lowtresh);
+                    printf("\n\n\n\n");
 
-                    surface = create_surface(image);
+                    image = copy_image(image1);
+                    double_threshold(&image, highthresh, lowtresh);
+                    hysteris(&image);
+
+                    surface = create_surface(&image);
                     texture = SDL_CreateTextureFromSurface(renderer, surface);
                     draw(renderer, texture);
 
@@ -52,10 +61,15 @@ void event_loop(SDL_Renderer* renderer, Image* image)
                 case SDLK_DOWN:
                     highthresh -= 5;
 
-                    double_threshold(image, highthresh, lowtresh);
-                    hysteris(image);
+                    printf("highthresh = %i\n", highthresh);
+                    printf("lowtrsh = %i\n", lowtresh);
+                    printf("\n\n\n\n");
 
-                    surface = create_surface(image);
+                    image = copy_image(image1);
+                    double_threshold(&image, highthresh, lowtresh);
+                    hysteris(&image);
+
+                    surface = create_surface(&image);
                     texture = SDL_CreateTextureFromSurface(renderer, surface);
                     draw(renderer, texture);
 
@@ -64,10 +78,15 @@ void event_loop(SDL_Renderer* renderer, Image* image)
                 case SDLK_LEFT:
                     lowtresh -= 5;
 
-                    double_threshold(image, highthresh, lowtresh);
-                    hysteris(image);
+                    printf("highthresh = %i\n", highthresh);
+                    printf("lowtrsh = %i\n", lowtresh);
+                    printf("\n\n\n\n");
 
-                    surface = create_surface(image);
+                    image = copy_image(image1);
+                    double_threshold(&image, highthresh, lowtresh);
+                    hysteris(&image);
+
+                    surface = create_surface(&image);
                     texture = SDL_CreateTextureFromSurface(renderer, surface);
                     draw(renderer, texture);
 
@@ -77,10 +96,15 @@ void event_loop(SDL_Renderer* renderer, Image* image)
                     if (lowtresh < 251)
                         lowtresh += 5;
 
-                    double_threshold(image, highthresh, lowtresh);
-                    hysteris(image);
+                    printf("highthresh = %i\n", highthresh);
+                    printf("lowtrsh = %i\n", lowtresh);
+                    printf("\n\n\n\n");
 
-                    surface = create_surface(image);
+                    image = copy_image(image1);
+                    double_threshold(&image, highthresh, lowtresh);
+                    hysteris(&image);
+
+                    surface = create_surface(&image);
                     texture = SDL_CreateTextureFromSurface(renderer, surface);
                     draw(renderer, texture);
 
