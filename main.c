@@ -1,15 +1,9 @@
 #include "utilis_image.h"
+#include "otsu.h"
 #include "sobel.h"
 #include "gaussian_filter.h"
 
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_surface.h>
 #include <err.h>
-#include <stdio.h>
-//#include <stdbool.h>
 
 void draw(SDL_Renderer* renderer, SDL_Texture* texture)
 {
@@ -73,7 +67,7 @@ void event_loop(SDL_Renderer* renderer, Image* image1)
                     texture = SDL_CreateTextureFromSurface(renderer, surface);
                     draw(renderer, texture);
 
-                   break;
+                    break;
 
                 case SDLK_LEFT:
                     lowtresh -= 5;
@@ -121,61 +115,88 @@ void event_loop(SDL_Renderer* renderer, Image* image1)
 
 int main(int argc, char** argv)
 {
-    if (argc != 2)
+    if (argc > 3)
         errx(EXIT_FAILURE, "Usage: image-file");
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
+    if (argc == 3) // Manual threshold mode
+    {
+        // SDL Stuff
+        if (SDL_Init(SDL_INIT_VIDEO) != 0)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Window* window = SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (window == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
+        SDL_Window* window = SDL_CreateWindow("Dynamic Fractal Canopy", 0, 0, 640, 400, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+        if (window == NULL)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
+        SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        if (renderer == NULL)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Texture* texture = IMG_LoadTexture(renderer, argv[1]);
-    if (texture == NULL)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
-
-
-    SDL_Surface* surface = IMG_Load(argv[1]);
-
-
-    SDL_SetWindowSize(window, surface->w, surface->h);
+        SDL_Texture* texture = IMG_LoadTexture(renderer, argv[1]);
+        if (texture == NULL)
+            errx(EXIT_FAILURE, "%s", SDL_GetError());
 
 
-    // Create an Image struct from the input surface
-    Image image = create_image(surface, surface->w, surface->h);
+        SDL_Surface* surface = IMG_Load(argv[1]);
+        SDL_SetWindowSize(window, surface->w, surface->h);
 
-    // Free the surface
-    SDL_FreeSurface(surface);
+        Image image = create_image(surface, surface->w, surface->h);
 
-    image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
-    image.path[0] = 'r';
-    image.path[1] = 'e';
-    image.path[2] = 's';
-    image.path[3] = '_';
-    strcat(image.path, argv[1]);
+        image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
+        image.path[0] = 'r';
+        image.path[1] = 'e';
+        image.path[2] = 's';
+        image.path[3] = '_';
+        strcat(image.path, argv[1]);
 
-    surface_to_grayscale(&image);
-    gaussian_blur(&image, 3);
-    edges(&image);
 
-    event_loop(renderer, &image);
+        printf("%s", image.path);
+        SDL_FreeSurface(surface);
 
-    // Save the image
-    //    SDL_Surface* final_surface = create_surface(&image);
-    //    SDL_SaveBMP(final_surface, image.path);
+        surface_to_grayscale(&image);
+        gaussian_blur(&image, 3);
+        edges(&image);
 
-    // Destroy the objects to free memory
-    //    SDL_FreeSurface(final_surface);
-    freeImage(&image);
+        event_loop(renderer, &image);
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+
+        // Destroy the components used to free memory
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        freeImage(&image);
+    }
+    else
+    {
+        // Import image
+        SDL_Surface* surface = IMG_Load(argv[1]);
+        Image image = create_image(surface, surface->w, surface->h);
+
+        // Create the name to save image
+        image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
+        image.path[0] = 'r';
+        image.path[1] = 'e';
+        image.path[2] = 's';
+        image.path[3] = '_';
+        strcat(image.path, argv[1]);
+
+        // Perform canny on the image
+        surface_to_grayscale(&image);
+        gaussian_blur(&image, 3);
+        apply_threshold(&image, otsu(&image));
+        //edges(&image);
+        //double_threshold(&image, 240, 100);
+        //hysteris(&image);
+
+        // Save the image
+        SDL_Surface* final_surface = create_surface(&image);
+        SDL_SaveBMP(final_surface, image.path);
+
+        // Free image and surface
+        SDL_FreeSurface(final_surface);
+        freeImage(&image);
+
+    }
     SDL_Quit();
 
     return EXIT_SUCCESS;
-}
+   }

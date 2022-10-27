@@ -194,7 +194,7 @@ void edges(Image *image)
     }
 
     // Perform non_max_suppresion operatation
-    non_max_suppresion(&sobel_image, image);
+//    non_max_suppresion(&sobel_image, image);
 
     freeImage(&sobel_image);
 }
