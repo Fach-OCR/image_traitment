@@ -13,13 +13,10 @@
  * =====================================================================================
  */
 #include "utilis_image.h"
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <err.h>
-#include <time.h>
 
 int Gx[3][3] = {
     {-1, 0, 1},
@@ -101,6 +98,62 @@ void non_max_suppresion(Image *sobel_image, Image *image)
                 return;
         }
     }
+}
+
+
+void double_threshold(Image *image, unsigned int lowthresh, unsigned int hightresh)
+{
+    Pixel **pixels = image->pixels;
+    int height = image->height;
+    int width = image->width;
+
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
+            if (pixels[i][j].r > hightresh)
+                set_all_pixel(image, i, j, 255);
+            else if (pixels[i][j].r > lowthresh)
+                set_all_pixel(image, i, j, 100);
+            else
+                set_all_pixel(image, i, j, 0);
+        }
+    }
+}
+
+
+void hysteris(Image *image)
+{
+    Image tmp_image = copy_image(image);
+    Pixel **pixels = tmp_image.pixels;
+    int height = image->height;
+    int width = image->width;
+
+
+    for (int i = 1; i < height - 1; ++i)
+    {
+        for (int j = 1; j < width - 1; ++j)
+        {
+            if (pixels[i][j].r == 255)
+                continue;
+            else if (pixels[i][j].r == 100)
+            {
+                if (
+                        pixels[i][j + 1].r == 255 || pixels[i][j - 1].r == 255 ||
+                        pixels[i + 1][j].r == 255 || pixels[i - 1][j].r == 255 ||
+                        pixels[i + 1][j + 1].r == 255 || pixels[i - 1][j - 1].r == 255 ||
+                        pixels[i + 1][j - 1].r == 255 || pixels[i - 1][j + 1].r == 255
+                   )
+                    set_all_pixel(image, i, j, 255);
+                else
+                    set_all_pixel(image, i, j, 0);
+            }
+            else
+                    set_all_pixel(image, i, j, 0);
+        }
+    }
+
+    freeImage(&tmp_image);
 }
 
 
