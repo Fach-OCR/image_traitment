@@ -108,6 +108,9 @@ void edges(Image *image)
             sobel(&sobel_image, Gx_val, Gy_val,i , j);
         }
     }
+    for (int i = 0; i < height; ++i)
+        for (int j = 0; j < width; ++j)
+            set_all_pixel(image, i, j, sobel_image.pixels[i][j].r);
 
     freeImage(&sobel_image);
 }

@@ -2,6 +2,9 @@
 #include "../../include/image_traitment/otsu.h"
 #include "../../include/image_traitment/sobel.h"
 #include "../../include/image_traitment/gaussian_filter.h"
+#include "../../include/image_traitment/preprocess.h"
+#include "../../include/image_traitment/linkedlist.h"
+#include "../../include/image_traitment/houghtransform.h"
 
 #include <err.h>
 
@@ -24,9 +27,18 @@ int main(int argc, char** argv)
 
     // Perform canny on the image
     surface_to_grayscale(&image);
+    image_contrast(&image, 10);
+    invert(&image);
+    image_normalize_brightness(&image);
     gaussian_blur(&image, 3);
     apply_threshold(&image, otsu(&image));
     hysteris(&image);
+    edges(&image);
+    int w = image.width;
+    int h = image.height;
+    int thresh = w>h?w/4:h/4;
+    hough_transform(&image, thresh);
+
 
     // Save the image
     SDL_Surface* final_surface = create_surface(&image);

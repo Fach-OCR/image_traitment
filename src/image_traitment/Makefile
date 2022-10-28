@@ -1,7 +1,7 @@
 CC = gcc -I../../include/
-CFLAGS = -Wall -Wextra -Werror `pkg-config --cflags sdl2 SDL2_image` -O3 -std=c99 -pedantic
+CFLAGS = -Wall -Wextra -Werror `pkg-config --cflags sdl2 SDL2_image` -g #-O3 -std=c99 -pedantic
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
-LDFLAGS = -g #-fsanitize=address
+LDFLAGS = #-g #-fsanitize=address
 
 
 SRC =  $(shell find -name "*.c")
@@ -21,7 +21,7 @@ init:
 	$(shell mkdir -p $(SRC:%=$(BUILD)/%))
 
 imagery: $(OBJ)
-	gcc -o $(EXEC) $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
+	gcc -o $(EXEC) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS)
 
 $(BUILD)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)
