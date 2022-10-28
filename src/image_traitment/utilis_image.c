@@ -26,6 +26,7 @@
 #include <math.h>
 #include <string.h>
 
+
 typedef struct Pixel
 {
     unsigned int r, g, b;

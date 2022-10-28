@@ -12,10 +12,9 @@
  *
  * =====================================================================================
  */
-#include "utilis_image.h"
-#ifndef M_PI
-    #define M_PI 3.14159265358979323846
-#endif
+
+#include "../../include/image_traitment/utilis_image.h"
+
 
 void surface_to_grayscale(Image *image)
 {

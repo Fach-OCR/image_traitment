@@ -1,44 +1,33 @@
-CC = gcc -Iinclude/
+CC = gcc -I../../include/
 CFLAGS = -Wall -Wextra -Werror `pkg-config --cflags sdl2 SDL2_image` -O3 -std=c99 -pedantic
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
 LDFLAGS = -g #-fsanitize=address
 
-BUILD := build
-SOURCE_DIR := src
 
-SRC = $(shell find $(SOURCE_DIR) -name "*.c" ! -name "main.c")
+SRC =  $(shell find -name "*.c")
 OBJ = $(SRC:%.c=$(BUILD)/%.o)
 DEP = $(SRC:%.c=$(BUILD)/%.d)
 
-all: init main clear
+BUILD := build
+EXEC := main
+
+all: init imagery
 
 clear:
 	find . -type d -empty -delete
 
 init:
 	$(shell mkdir -p $(BUILD))
-	$(shell mkdir -p $(SRC:%.c=$(BUILD)/%))
+	$(shell mkdir -p $(SRC:%=$(BUILD)/%))
 
-main: $(OBJ)
-	gcc -o $@ $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
-
-image_traitment:
-	make -C src/image_traitment
-
-solver:
-	make -C src/sudoku_solver
+imagery: $(OBJ)
+	gcc -o $(EXEC) $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
 
 $(BUILD)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)
 
 clean:
-	${RM} ${OBJ}
 	rm -rf $(BUILD)
-	${RM} ${EXE}
-	${RM} gaussian
+	$(RM) $(EXEC)
 	${RM} res_*
-	${RM} .ut*
-	${RM} .gauss*
-	${RM} .Make*
-	${RM} .main*
-	${RM} .sob*
+
