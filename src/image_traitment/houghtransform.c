@@ -26,7 +26,7 @@
 void draw_line(Image *image, int w, int h, Line *line);
 
 
-MyList hough_transform(Image *image, int threshold)
+MyList hough_transform(Image *image, Image *draw_image, int threshold)
 {
     int width = image->width;
     int height = image->height;
@@ -118,7 +118,7 @@ MyList hough_transform(Image *image, int threshold)
                 line.yStart = y1;
                 line.yEnd = y2;
 
-                draw_line(image, width, height, &line);
+                draw_line(draw_image, width, height, &line);
 
                 void *p = Line_tovptr(line);
                 append(&all_lines, p);

@@ -1,24 +1,23 @@
-#include "../../include/image_traitment/utilis_image.h"
-#include "../../include/image_traitment/otsu.h"
-#include "../../include/image_traitment/sobel.h"
-#include "../../include/image_traitment/gaussian_filter.h"
-#include "../../include/image_traitment/preprocess.h"
-#include "../../include/image_traitment/linkedlist.h"
-#include "../../include/image_traitment/houghtransform.h"
-
 #include <err.h>
+
+#include "../../include/image_traitment/linkedlist.h"
+#include "../../include/image_traitment/otsu.h"
+#include "../../include/image_traitment/preprocess.h"
+#include "../../include/image_traitment/sobel.h"
+#include "../../include/image_traitment/utilis_image.h"
+#include "../../include/image_traitment/gaussian_filter.h"
+#include "../../include/image_traitment/houghtransform.h"
 
 int main(int argc, char** argv)
 {
-    if (argc != 2)
-        errx(EXIT_FAILURE, "Usage: image-file");
+    if (argc != 2) errx(EXIT_FAILURE, "Usage: image-file");
 
     // Import image
     SDL_Surface* surface = IMG_Load(argv[1]);
     Image image = create_image(surface, surface->w, surface->h);
 
     // Create the name to save image
-    image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
+    image.path = (char*)calloc(strlen(argv[1]) + 5, sizeof(char));
     image.path[0] = 'r';
     image.path[1] = 'e';
     image.path[2] = 's';
@@ -31,14 +30,19 @@ int main(int argc, char** argv)
     invert(&image);
     image_normalize_brightness(&image);
     gaussian_blur(&image, 3);
-    apply_threshold(&image, otsu(&image));
+    int otsuthresh = otsu(&image);
+    apply_threshold(&image, otsuthresh);
     hysteris(&image);
     edges(&image);
+
+    Image draw_image = copy_image(&image);
     int w = image.width;
     int h = image.height;
-    int thresh = w>h?w/4:h/4;
-    hough_transform(&image, thresh);
+    int thresh = w > h ? w / 4 : h / 4;
+    printf("tresh normal %i\n", thresh);
+    printf("otsu normal %i\n", otsuthresh);
 
+    MyList all_lines = hough_transform(&image, &draw_image, thresh + 60);
 
     // Save the image
     SDL_Surface* final_surface = create_surface(&image);
