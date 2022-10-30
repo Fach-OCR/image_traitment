@@ -35,14 +35,16 @@ int main(int argc, char** argv)
     hysteris(&image);
     edges(&image);
 
-    Image draw_image = copy_image(&image);
+    //    Image draw_image = copy_image(&image);
     int w = image.width;
     int h = image.height;
     int thresh = w > h ? w / 4 : h / 4;
-    printf("tresh normal %i\n", thresh);
-    printf("otsu normal %i\n", otsuthresh);
+    //  printf("tresh normal %i\n", thresh);
+    //printf("otsu normal %i\n", otsuthresh);
 
-    MyList all_lines = hough_transform(&image, &draw_image, thresh + 60);
+    //    MyList all_lines = 
+    hough_transform(&image, &image, thresh);
+
 
     // Save the image
     SDL_Surface* final_surface = create_surface(&image);

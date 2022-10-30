@@ -132,7 +132,7 @@ MyList hough_transform(Image *image, Image *draw_image, int threshold)
 
 void draw_line(Image *image, int w, int h, Line *line)
 {
-    Pixel color = { .r = 40, .g = 40, .b = 200 };
+    Pixel color = { .r = 255, .g = 0, .b = 0 };
 
     int x0 = line->xStart;
     int y0 = line->yStart;

@@ -1,4 +1,4 @@
-CC = gcc -I../../include/
+C = gcc -I../../include/
 CFLAGS = -Wall -Wextra -Werror `pkg-config --cflags sdl2 SDL2_image` -g #-O3 -std=c99 -pedantic
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
 LDFLAGS = #-g #-fsanitize=address
@@ -22,6 +22,15 @@ init:
 
 imagery: $(OBJ)
 	gcc -o $(EXEC) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS)
+
+test:
+	./main image_01.jpeg && \
+	./main image_02.jpeg && \
+	./main image_03.jpeg && \
+	./main image_04.jpeg && \
+	./main image_05.jpeg && \
+	./main image_06.jpeg && \
+	feh res_*
 
 $(BUILD)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)
