@@ -7,6 +7,7 @@
 #include "../../include/image_traitment/utilis_image.h"
 #include "../../include/image_traitment/gaussian_filter.h"
 #include "../../include/image_traitment/houghtransform.h"
+#include "../../include/image_traitment/grid_detection.h"
 
 int main(int argc, char** argv)
 {
@@ -24,30 +25,36 @@ int main(int argc, char** argv)
     image.path[3] = '_';
     strcat(image.path, argv[1]);
 
-    // Perform canny on the image
+    // Preprocess
     surface_to_grayscale(&image);
     image_contrast(&image, 10);
-    invert(&image);
     image_normalize_brightness(&image);
+    invert(&image);
     gaussian_blur(&image, 3);
+
+    // Binarisation
     int otsuthresh = otsu(&image);
     apply_threshold(&image, otsuthresh);
     hysteris(&image);
     edges(&image);
 
-    //    Image draw_image = copy_image(&image);
+    Image draw_image = copy_image(&image);
     int w = image.width;
     int h = image.height;
     int thresh = w > h ? w / 4 : h / 4;
-    //  printf("tresh normal %i\n", thresh);
-    //printf("otsu normal %i\n", otsuthresh);
 
-    //    MyList all_lines = 
-    hough_transform(&image, &image, thresh);
+    MyList all_lines = hough_transform(&image, thresh);
+    MyList simplified_lines = simplify_lines(&all_lines, 10);
+
+    for (size_t i = 0; i < simplified_lines.length; ++i)
+    {
+        Line *l = get_value(&simplified_lines, i);
+        draw_line(&draw_image, l);
+    }
 
 
     // Save the image
-    SDL_Surface* final_surface = create_surface(&image);
+    SDL_Surface* final_surface = create_surface(&draw_image);
     SDL_SaveBMP(final_surface, image.path);
 
     // Free image and surface

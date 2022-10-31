@@ -23,10 +23,10 @@
 
 #define DEG2RAD 0.017453293f
 
-void draw_line(Image *image, int w, int h, Line *line);
+void draw_line(Image *image, Line *line);
 
 
-MyList hough_transform(Image *image, Image *draw_image, int threshold)
+MyList hough_transform(Image *image, int threshold)
 {
     int width = image->width;
     int height = image->height;
@@ -118,7 +118,6 @@ MyList hough_transform(Image *image, Image *draw_image, int threshold)
                 line.yStart = y1;
                 line.yEnd = y2;
 
-                draw_line(draw_image, width, height, &line);
 
                 void *p = Line_tovptr(line);
                 append(&all_lines, p);
@@ -130,8 +129,10 @@ MyList hough_transform(Image *image, Image *draw_image, int threshold)
 }
 
 
-void draw_line(Image *image, int w, int h, Line *line)
+void draw_line(Image *image, Line *line)
 {
+    int w = image->width;
+    int h = image->height;
     Pixel color = { .r = 255, .g = 0, .b = 0 };
 
     int x0 = line->xStart;

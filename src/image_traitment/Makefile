@@ -24,12 +24,14 @@ imagery: $(OBJ)
 	gcc -o $(EXEC) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS)
 
 test:
+	mv images/* .
 	./main image_01.jpeg && \
 	./main image_02.jpeg && \
 	./main image_03.jpeg && \
 	./main image_04.jpeg && \
 	./main image_05.jpeg && \
 	./main image_06.jpeg && \
+	mv image_0* images/
 	feh res_*
 
 $(BUILD)/%.o : %.c

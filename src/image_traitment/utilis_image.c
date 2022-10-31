@@ -221,6 +221,17 @@ void set_all_pixel(Image *image, int i, int j, unsigned int val)
     image->pixels[i][j].b = val;
 }
 
+int* image_to_network(Image *image)
+{
+    int *res = (int*)calloc(784, sizeof(int));
+
+    for (int i = 0; i < 28; ++i)
+        for (int j = 0; j < 28; ++j)
+            res[28 * i + j] = image->pixels[i][j].r;
+
+    return res;
+}
+
 
 void freeImage(Image *image)
 {
