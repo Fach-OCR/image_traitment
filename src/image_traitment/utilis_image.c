@@ -18,6 +18,9 @@
  */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_surface.h>
 #include <err.h>
 #include <math.h>
 #include <stdio.h>
@@ -234,27 +237,40 @@ SDL_Surface *resize_surface(SDL_Surface *surface, int new_width, int new_height)
     SDL_Surface *new_surface =
         SDL_CreateRGBSurface(0, new_width, new_height, 32, 0, 0, 0, 0);
 
+    const unsigned int w1 = surface->w;
+    const unsigned int h1 = surface->h;
     // calculate the ratio between the new size and the old size
-    double ratio_width = (double)surface->w / (double)new_width;
-    double ratio_height = (double)surface->h / (double)new_height;
+    int x_ratio = (int)((w1 << 16) / new_width) + 1;
+    int y_ratio = (int)((h1 << 16) / new_height) + 1;
+    // double ratio_width = (double)surface->w / (double)new_width;
+    // double ratio_height = (double)surface->h / (double)new_height;
 
+    SDL_LockSurface(new_surface);
+    SDL_LockSurface(surface);
+
+    Uint32 *old_pixels = surface->pixels;
+    Uint32 *new_pixels = new_surface->pixels;
     // calculate the new pixels
-    for (int x = 0; x < new_height + 1; x++)
+    int x2, y2;
+    for (int i = 0; i < new_height; i++)
     {
-        for (int y = 0; y < new_width + 1; y++)
+        for (int j = 0; j < new_width; j++)
         {
-            // calculate the position of the pixel in the old image
-            printf("i = %i   y = %i\n", x, y);
-            int old_x = (int)(x * ratio_height);
-            int old_y = (int)(y * ratio_width);
+            x2 = ((j * x_ratio) >> 16);
+            y2 = ((i * y_ratio) >> 16);
 
-            // copy the pixel from the old image to the new image
-            Uint32 pixel = get_pixel(surface, old_x, old_y);
-            put_pixel(new_surface, x, y, pixel);
+            new_pixels[i * new_width + j] = old_pixels[y2 * w1 + x2];
+
+            // calculate the position of the pixel in the old image
+            printf("i = %i   j = %i\n", i, j);
+            // int old_x = (int)(x * ratio_height);
+            // int old_y = (int)(y * ratio_width);
         }
     }
+    SDL_UnlockSurface(new_surface);
+    SDL_UnlockSurface(surface);
 
-    printf("NOW");
+    printf("NOW\n");
     // return the new surface
     return new_surface;
 }

@@ -1,3 +1,4 @@
+#include <SDL2/SDL_surface.h>
 #include <err.h>
 
 #include "../../include/image_traitment/linkedlist.h"
@@ -34,10 +35,13 @@ int main(int argc, char **argv)
 
     // Import image
     SDL_Surface *surface = IMG_Load(argv[1]);
-    SDL_Surface *surface2 = resize_surface(surface, 300, 300);
-    SDL_FreeSurface(surface);
-    printf("NOW");
+    SDL_Surface *surface2 =
+        resize_surface(surface, surface->w / 2, surface->h / 2);
     Image image = create_image(surface2, surface2->w, surface2->h);
+    SDL_FreeSurface(surface);
+
+    SDL_Surface *final_surface = create_surface(&image);
+    SDL_SaveBMP(final_surface, "lol.jpeg");
     // Create the name to save image
     image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
     image.path[0] = 'r';
@@ -85,8 +89,8 @@ int main(int argc, char **argv)
     }
 
     // Save the image
-    SDL_Surface *final_surface = create_surface(&draw_image);
-    SDL_SaveBMP(final_surface, image.path);
+    // SDL_Surface *final_surface = create_surface(&draw_image);
+    // SDL_SaveBMP(final_surface, image.path);
 
     // Free image and surface
     SDL_FreeSurface(final_surface);
