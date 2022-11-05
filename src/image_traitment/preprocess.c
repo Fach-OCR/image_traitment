@@ -56,7 +56,8 @@ void image_normalize_brightness(Image *image)
     {
         for (size_t j = 0; j < image->width; ++j)
         {
-            set_all_pixel(image, i, j, 255 - image->pixels[i][j].r * (255.f / m));
+            set_all_pixel(image, i, j,
+                          255 - image->pixels[i][j].r * (255.f / m));
         }
     }
 }
@@ -71,7 +72,3 @@ void invert(Image *image)
         }
     }
 }
-
-
-
-

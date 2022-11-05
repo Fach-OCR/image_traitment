@@ -15,9 +15,9 @@
  *
  * =====================================================================================
  */
-#include <stdlib.h>
-
 #include "../../include/image_traitment/linkedlist.h"
+
+#include <stdlib.h>
 
 void *Line_tovptr(Line line)
 {
@@ -242,4 +242,3 @@ void printMyList(MyList *list)
     }
     printf("  %d ]\n", *((int *)tmp->value));
 }
-

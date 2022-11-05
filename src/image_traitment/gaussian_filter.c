@@ -1,4 +1,5 @@
-/* * =====================================================================================
+/* *
+ * =====================================================================================
  *    Filename:  gaussian_filter.c *
  *    Description: Perform gaussian filter on an image
  *
@@ -15,7 +16,6 @@
 
 #include "../../include/image_traitment/utilis_image.h"
 
-
 void surface_to_grayscale(Image *image)
 {
     Pixel **pixels = image->pixels;
@@ -30,7 +30,7 @@ void surface_to_grayscale(Image *image)
             r = pixels[i][j].r;
             g = pixels[i][j].g;
             b = pixels[i][j].b;
-            unsigned int average = 0.3*r + 0.59*g + 0.11*b;
+            unsigned int average = 0.3 * r + 0.59 * g + 0.11 * b;
             set_all_pixel(image, i, j, average);
         }
     }
@@ -38,31 +38,31 @@ void surface_to_grayscale(Image *image)
 
 void gaussian_blur(Image *image, int radius)
 {
-     double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
-     int kwidht = (2 * round(radius)) + 1;
+    double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
+    int kwidht = (2 * round(radius)) + 1;
 
-     double **kernel = calloc(kwidht, sizeof(double *));
-     for (int i = 0; i < kwidht; ++i)
-         kernel[i] = calloc(kwidht, sizeof(double));
-     double sum = 0.0;
+    double **kernel = calloc(kwidht, sizeof(double *));
+    for (int i = 0; i < kwidht; ++i)
+        kernel[i] = calloc(kwidht, sizeof(double));
+    double sum = 0.0;
 
-     for (double x = -radius; x < radius; ++x)
-     {
-         for (double y = -radius; y < radius; ++y)
-         {
-             double exponum = -(x * x + y * y);
-             double expodeno = 2 * sigma * sigma;
-             double expression = exp(exponum / expodeno);
-             double kvalue = expression / (2 * M_PI * sigma * sigma);
+    for (double x = -radius; x < radius; ++x)
+    {
+        for (double y = -radius; y < radius; ++y)
+        {
+            double exponum = -(x * x + y * y);
+            double expodeno = 2 * sigma * sigma;
+            double expression = exp(exponum / expodeno);
+            double kvalue = expression / (2 * M_PI * sigma * sigma);
 
-             kernel[(int)x + radius][(int)y + radius] = kvalue;
-             sum += kvalue;
-         }
-     }
+            kernel[(int)x + radius][(int)y + radius] = kvalue;
+            sum += kvalue;
+        }
+    }
 
-     for (int x = 0; x < kwidht; ++x)
-         for (int y = 0; y < kwidht; ++y)
-             kernel[x][y] /= sum;
+    for (int x = 0; x < kwidht; ++x)
+        for (int y = 0; y < kwidht; ++y)
+            kernel[x][y] /= sum;
 
     Image tmp_image = copy_image(image);
     for (unsigned int x = radius; x < image->height - radius; ++x)
@@ -89,6 +89,3 @@ void gaussian_blur(Image *image, int radius)
 
     freeImage(&tmp_image);
 }
-
-
-

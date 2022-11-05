@@ -17,7 +17,6 @@
  */
 #include "../../include/image_traitment/utilis_image.h"
 
-
 float compute_zero_order(float *hist, int k)
 {
     float res = 0;
@@ -27,22 +26,19 @@ float compute_zero_order(float *hist, int k)
     return res;
 }
 
-
 float compute_first_order(float *hist, int k)
 {
     float res = 0;
     for (int i = 0; i < k; i++)
-            res += i*hist[i];
+        res += i * hist[i];
 
     return res;
 }
 
-
-float compute_variance_class(float uT,float wk, float uk)
+float compute_variance_class(float uT, float wk, float uk)
 {
-    return pow((uT*wk-uk),2)/(wk*(1-wk));
+    return pow((uT * wk - uk), 2) / (wk * (1 - wk));
 }
-
 
 int otsu(Image *image)
 {
@@ -97,15 +93,3 @@ void apply_threshold(Image *image, unsigned int threshold)
         for (unsigned int j = 0; j < image->width; ++j)
             set_all_pixel(image, i, j, pixels[i][j].r > threshold ? 0 : 255);
 }
-
-
-
-
-
-
-
-
-
-
-
-

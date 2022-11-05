@@ -11,17 +11,22 @@ DEP = $(SRC:%.c=$(BUILD)/%.d)
 BUILD := build
 EXEC := main
 
+
 all: init imagery
+
 
 clear:
 	find . -type d -empty -delete
+
 
 init:
 	$(shell mkdir -p $(BUILD))
 	$(shell mkdir -p $(SRC:%=$(BUILD)/%))
 
+
 imagery: $(OBJ)
 	gcc -o $(EXEC) $(CFLAGS) $^ $(LDFLAGS) $(LDLIBS)
+
 
 test:
 	mv images/* .
@@ -33,6 +38,11 @@ test:
 	./main image_06.jpeg && \
 	mv image_0* images/
 	feh res_*
+
+
+format:
+	find -name "*.[ch]" -exec clang-format --verbose -i {} \;
+
 
 $(BUILD)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)

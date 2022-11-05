@@ -1,4 +1,5 @@
-/* * =====================================================================================
+/* *
+ * =====================================================================================
  *    Filename:  sobel.c
  *    Description: Perform sobel function on the image
  *
@@ -14,19 +15,9 @@
  */
 #include "../../include/image_traitment/utilis_image.h"
 
+int Gx[3][3] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
 
-int Gx[3][3] = {
-    {-1, 0, 1},
-    {-2, 0, 2},
-    {-1, 0, 1}
-};
-
-int Gy[3][3] = {
-    { 1,  2,  1},
-    { 0,  0,  0},
-    {-1, -2, -1}
-};
-
+int Gy[3][3] = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
 
 void sobel(Image *image, int Gx, int Gy, int i, int j)
 {
@@ -37,14 +28,12 @@ void sobel(Image *image, int Gx, int Gy, int i, int j)
     set_all_pixel(image, i, j, n);
 }
 
-
 void hysteris(Image *image)
 {
     Image tmp_image = copy_image(image);
     Pixel **pixels = tmp_image.pixels;
     int height = image->height;
     int width = image->width;
-
 
     for (int i = 1; i < height - 1; ++i)
     {
@@ -54,24 +43,23 @@ void hysteris(Image *image)
                 continue;
             else if (pixels[i][j].r == 100)
             {
-                if (
-                        pixels[i][j + 1].r == 255 || pixels[i][j - 1].r == 255 ||
-                        pixels[i + 1][j].r == 255 || pixels[i - 1][j].r == 255 ||
-                        pixels[i + 1][j + 1].r == 255 || pixels[i - 1][j - 1].r == 255 ||
-                        pixels[i + 1][j - 1].r == 255 || pixels[i - 1][j + 1].r == 255
-                   )
+                if (pixels[i][j + 1].r == 255 || pixels[i][j - 1].r == 255
+                    || pixels[i + 1][j].r == 255 || pixels[i - 1][j].r == 255
+                    || pixels[i + 1][j + 1].r == 255
+                    || pixels[i - 1][j - 1].r == 255
+                    || pixels[i + 1][j - 1].r == 255
+                    || pixels[i - 1][j + 1].r == 255)
                     set_all_pixel(image, i, j, 255);
                 else
                     set_all_pixel(image, i, j, 0);
             }
             else
-                    set_all_pixel(image, i, j, 0);
+                set_all_pixel(image, i, j, 0);
         }
     }
 
     freeImage(&tmp_image);
 }
-
 
 void edges(Image *image)
 {
@@ -93,8 +81,10 @@ void edges(Image *image)
             {
                 for (int y = -1; y < 2; y++)
                 {
-                    // Multiply each channel by corresponding value in convolutional array
-                    if (i + x < height && i + x > 0 && j + y < width && j + y > 0)
+                    // Multiply each channel by corresponding value in
+                    // convolutional array
+                    if (i + x < height && i + x > 0 && j + y < width
+                        && j + y > 0)
                     {
                         int kx = x + 1;
                         int sy = y + 1;
@@ -105,7 +95,7 @@ void edges(Image *image)
                 }
             }
             // Perform sobel operatation
-            sobel(&sobel_image, Gx_val, Gy_val,i , j);
+            sobel(&sobel_image, Gx_val, Gy_val, i, j);
         }
     }
     for (int i = 0; i < height; ++i)
@@ -114,6 +104,3 @@ void edges(Image *image)
 
     freeImage(&sobel_image);
 }
-
-
-

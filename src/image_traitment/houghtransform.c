@@ -25,14 +25,14 @@
 
 void draw_line(Image *image, Line *line);
 
-
 MyList hough_transform(Image *image, int threshold)
 {
     int width = image->width;
     int height = image->height;
     Pixel **pixels = image->pixels;
 
-    double hough_h = (sqrt(2.0) * (double)(height > width ? height : width)) / 2;
+    double hough_h =
+        (sqrt(2.0) * (double)(height > width ? height : width)) / 2;
     double _accu_h = hough_h * 2.0, _accu_w = 180;
     double center_x = width / 2.0, center_y = height / 2.0;
 
@@ -48,15 +48,15 @@ MyList hough_transform(Image *image, int threshold)
                 for (int t = 0; t < 180; ++t)
                 {
                     double r =
-                        (((double)j - center_x) * cos((double)t * DEG2RAD)) +
-                        (((double)i - center_y) * sin((double)t * DEG2RAD));
+                        (((double)j - center_x) * cos((double)t * DEG2RAD))
+                        + (((double)i - center_y) * sin((double)t * DEG2RAD));
                     _accu[(int)((round(r + hough_h) * 180.0)) + t]++;
                 }
             }
         }
     }
 
-    MyList all_lines = {NULL, NULL, 0};
+    MyList all_lines = { NULL, NULL, 0 };
 
     for (int r = 0; r < _accu_h; r++)
     {
@@ -70,12 +70,14 @@ MyList hough_transform(Image *image, int threshold)
                 {
                     for (int lx = -4; lx <= 4; lx++)
                     {
-                        if ((ly + r >= 0 && ly + r < _accu_h) &&
-                                (lx + t >= 0 && lx + t < _accu_w))
+                        if ((ly + r >= 0 && ly + r < _accu_h)
+                            && (lx + t >= 0 && lx + t < _accu_w))
                         {
-                            if ((int)_accu[(int)((r + ly) * _accu_w) + (t + lx)] > max)
+                            if ((int)_accu[(int)((r + ly) * _accu_w) + (t + lx)]
+                                > max)
                             {
-                                max = _accu[(int)((r + ly) * _accu_w) + (t + lx)];
+                                max =
+                                    _accu[(int)((r + ly) * _accu_w) + (t + lx)];
                                 ly = lx = 5;
                             }
                         }
@@ -91,25 +93,29 @@ MyList hough_transform(Image *image, int threshold)
                 {
                     // y = (r - x cos(t)) / sin(t)
                     x1 = 0;
-                    y1 = ((double)(r - (_accu_h / 2)) -
-                            ((x1 - (width / 2.0)) * cos(t * DEG2RAD))) /
-                        sin(t * DEG2RAD) + (height / 2.0);
+                    y1 = ((double)(r - (_accu_h / 2))
+                          - ((x1 - (width / 2.0)) * cos(t * DEG2RAD)))
+                            / sin(t * DEG2RAD)
+                        + (height / 2.0);
                     x2 = width - 0;
-                    y2 = ((double)(r - (_accu_h / 2)) -
-                            ((x2 - (width / 2.0)) * cos(t * DEG2RAD))) /
-                        sin(t * DEG2RAD) + (height / 2.0);
+                    y2 = ((double)(r - (_accu_h / 2))
+                          - ((x2 - (width / 2.0)) * cos(t * DEG2RAD)))
+                            / sin(t * DEG2RAD)
+                        + (height / 2.0);
                 }
                 else
                 {
                     // x = (r - y sin(t)) / cos(t);
                     y1 = 0;
-                    x1 = ((double)(r - (_accu_h / 2)) -
-                            ((y1 - (height / 2.0)) * sin(t * DEG2RAD))) /
-                        cos(t * DEG2RAD) + (width / 2.0);
+                    x1 = ((double)(r - (_accu_h / 2))
+                          - ((y1 - (height / 2.0)) * sin(t * DEG2RAD)))
+                            / cos(t * DEG2RAD)
+                        + (width / 2.0);
                     y2 = height - 0;
-                    x2 = ((double)(r - (_accu_h / 2)) -
-                            ((y2 - (height / 2.0)) * sin(t * DEG2RAD))) /
-                        cos(t * DEG2RAD) + (width / 2.0);
+                    x2 = ((double)(r - (_accu_h / 2))
+                          - ((y2 - (height / 2.0)) * sin(t * DEG2RAD)))
+                            / cos(t * DEG2RAD)
+                        + (width / 2.0);
                 }
                 // append to list line
                 Line line;
@@ -117,7 +123,6 @@ MyList hough_transform(Image *image, int threshold)
                 line.xEnd = x2;
                 line.yStart = y1;
                 line.yEnd = y2;
-
 
                 void *p = Line_tovptr(line);
                 append(&all_lines, p);
@@ -127,7 +132,6 @@ MyList hough_transform(Image *image, int threshold)
 
     return all_lines;
 }
-
 
 void draw_line(Image *image, Line *line)
 {
@@ -174,4 +178,3 @@ void draw_line(Image *image, Line *line)
         }
     }
 }
-
