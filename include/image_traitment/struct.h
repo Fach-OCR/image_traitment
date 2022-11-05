@@ -12,23 +12,21 @@
  * @brief
  *
  */
-typedef struct Line
-{
-    int xStart;
-    int yStart;
-    int xEnd;
-    int yEnd;
+typedef struct Line {
+  int xStart;
+  int yStart;
+  int xEnd;
+  int yEnd;
 } Line;
 
 /**
  * @brief
  *
  */
-typedef struct LineList
-{
-    Line *lines;
-    int len;
-    double maxTheta;
+typedef struct LineList {
+  Line *lines;
+  int len;
+  double maxTheta;
 
 } LineList;
 
@@ -36,32 +34,29 @@ typedef struct LineList
  * @brief
  *
  */
-typedef struct Dot
-{
-    int X;
-    int Y;
+typedef struct Dot {
+  int X;
+  int Y;
 } Dot;
 
 /**
  * @brief
  *
  */
-typedef struct Square
-{
-    Line top;
-    Line bottom;
-    Line left;
-    Line right;
+typedef struct Square {
+  Line top;
+  Line bottom;
+  Line left;
+  Line right;
 } Square;
 
 /**
  * @brief
  *
  */
-typedef struct SquareList
-{
-    Square *squares;
-    int len;
+typedef struct SquareList {
+  Square *squares;
+  int len;
 } SquareList;
 
 /**

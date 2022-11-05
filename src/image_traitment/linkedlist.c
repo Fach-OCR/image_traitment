@@ -19,6 +19,15 @@
 
 #include <stdlib.h>
 
+void *Dot_tovptr(Dot dot)
+{
+    void *p = malloc(sizeof(Dot));
+    if (p == NULL)
+        errx(1, "Not enough memory");
+    *(Dot *)p = dot;
+    return p;
+}
+
 void *Line_tovptr(Line line)
 {
     void *p = malloc(sizeof(Line));

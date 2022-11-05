@@ -133,6 +133,24 @@ MyList hough_transform(Image *image, int threshold)
     return all_lines;
 }
 
+void draw_dot(Image *image, Dot *dot, int size)
+{
+    int width = image->width;
+    int height = image->height;
+    int x = dot->X;
+    int y = dot->Y;
+    for (int i = -size; i < size; ++i)
+    {
+        for (int j = -size; j < size; ++j)
+        {
+            if (x + i >= 0 && x + i < height && j + y >= 0 && j + y < width)
+            {
+                image->pixels[x + i][y + j].g = 255;
+            }
+        }
+    }
+}
+
 void draw_line(Image *image, Line *line)
 {
     int w = image->width;
@@ -151,6 +169,11 @@ void draw_line(Image *image, Line *line)
     int sy = y0 < y1 ? 1 : -1;
 
     int err = dx + dy;
+
+    Dot d1 = { x0, y0 };
+    Dot d2 = { x1, y1 };
+    draw_dot(image, &d1, 7);
+    draw_dot(image, &d2, 7);
 
     while (1)
     {

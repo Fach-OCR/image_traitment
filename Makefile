@@ -27,6 +27,10 @@ image_traitment:
 solver:
 	make -C src/sudoku_solver
 
+format:
+	find -name "*.[ch]" -exec clang-format --verbose -i {} \;
+
+
 $(BUILD)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDLFLAGS) $(CPPFLAGS) $(LDLIBS)
 

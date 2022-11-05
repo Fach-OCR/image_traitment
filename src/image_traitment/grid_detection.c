@@ -45,29 +45,53 @@ MyList simplify_lines(MyList *all_lines, int gap)
             // Line almost equals
             if (abs(x1d - x2d) <= gap && abs(x1f - x2f) <= gap
                 && abs(y1d - y2d) <= gap && abs(y1f - y2f) <= gap)
-            {
-                printf("xstart: %i  ystart: %i  xend: %i, yend %i\n",
-                       l1->xStart, l1->yStart, l1->xEnd, l1->yEnd);
-                printf("xstart: %i  ystart: %i  xend: %i, yend %i\n",
-                       l2->xStart, l2->yStart, l2->xEnd, l2->yEnd);
-                Line new_line;
-                new_line.xStart = (x1d + x2d) / 2;
-                new_line.yStart = (y1d + y2d) / 2;
-                new_line.xEnd = (x1f + x2f) / 2;
-                new_line.yEnd = (y1f + y2f) / 2;
-                removeAt(all_lines, i);
-                removeAt(all_lines, j);
-                i = 0;
-                j = 1;
-
-                printf("xstart: %i  ystart: %i  xend: %i, yend %i\n\n\n",
-                       new_line.xStart, new_line.yStart, new_line.xEnd,
-                       new_line.yEnd);
-                void *p = Line_tovptr(new_line);
-                append(&new_lines, p);
-            }
+                append(&new_lines, l1);
         }
     }
 
     return new_lines;
+}
+
+MyList find_intersections(MyList *lines)
+{
+    MyList res = { NULL, NULL, 0 };
+    for (size_t i = 0; i < lines->length; ++i)
+    {
+        for (size_t j = 1; j < lines->length; ++j)
+        {
+            Line *l1 = get_value(lines, i);
+            Line *l2 = get_value(lines, j);
+            int x1, x2, x3, x4, y1, y2, y3, y4;
+            x1 = l1->xStart;
+            x2 = l1->xEnd;
+            y1 = l1->yStart;
+            y2 = l1->yEnd;
+
+            x3 = l2->xStart;
+            x4 = l2->xEnd;
+            y3 = l2->yStart;
+            y4 = l2->yEnd;
+
+            int x12 = x1 - x2;
+            int y34 = y3 - y4;
+            int y12 = y1 - y2;
+            int x34 = x3 - x4;
+
+            int c = x12 * y34 - y12 * x34;
+
+            if (c > 0)
+            {
+                Dot dot;
+                int a = x1 * y2 - y1 * x2;
+                int b = x3 * y4 - y3 * x4;
+                dot.X = (a * x34 - b * x12) / c;
+                dot.Y = (a * y34 - b * y12) / c;
+
+                void *p = Dot_tovptr(dot);
+                append(&res, p);
+            }
+        }
+    }
+
+    return res;
 }

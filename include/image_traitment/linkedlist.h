@@ -7,20 +7,19 @@
 
 #include "../../include/image_traitment/struct.h"
 
-typedef struct Node_T
-{
-    void *value;
-    struct Node_T *next;
-    struct Node_T *prev;
+typedef struct Node_T {
+  void *value;
+  struct Node_T *next;
+  struct Node_T *prev;
 } Node;
 
-typedef struct
-{
-    Node *head;
-    Node *tail;
-    size_t length;
+typedef struct {
+  Node *head;
+  Node *tail;
+  size_t length;
 } MyList;
 
+void *Dot_tovptr(Dot dot);
 void *Line_tovptr(Line line);
 void *Square_tovptr(Square square);
 
