@@ -87,5 +87,5 @@ void gaussian_blur(Image *image, int radius)
         free(kernel[i]);
     free(kernel);
 
-    freeImage(&tmp_image);
+    free_image(&tmp_image);
 }

@@ -58,7 +58,7 @@ void hysteris(Image *image)
         }
     }
 
-    freeImage(&tmp_image);
+    free_image(&tmp_image);
 }
 
 void edges(Image *image)
@@ -102,5 +102,5 @@ void edges(Image *image)
         for (int j = 0; j < width; ++j)
             set_all_pixel(image, i, j, sobel_image.pixels[i][j].r);
 
-    freeImage(&sobel_image);
+    free_image(&sobel_image);
 }

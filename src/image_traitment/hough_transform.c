@@ -130,6 +130,7 @@ MyList hough_transform(Image *image, int threshold)
         }
     }
 
+    free(_accu);
     return all_lines;
 }
 

@@ -29,10 +29,9 @@ SDL_Surface *create_surface(Image *image);
 
 void set_all_pixel(Image *image, int i, int j, unsigned int val);
 
-void freeImage(Image *image);
+void free_image(Image *image);
 
 Image copy_image(Image *image);
 
-SDL_Surface *resize_surface(SDL_Surface *surface, int new_width,
-                            int new_height);
+Image resize_image(Image *image, int new_width, int new_height);
 #endif

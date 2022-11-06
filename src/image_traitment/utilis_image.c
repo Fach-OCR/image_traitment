@@ -19,7 +19,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_surface.h>
 #include <err.h>
 #include <math.h>
@@ -222,7 +221,7 @@ int *image_to_network(Image *image)
     return res;
 }
 
-void freeImage(Image *image)
+void free_image(Image *image)
 {
     free(image->path);
     for (unsigned int x = 0; x < image->height; x++)
@@ -231,46 +230,43 @@ void freeImage(Image *image)
     free(image->pixels);
 }
 
-SDL_Surface *resize_surface(SDL_Surface *surface, int new_width, int new_height)
+Image resize_image(Image *image, int new_width, int new_height)
 {
-    // create a new surface with the new size
-    SDL_Surface *new_surface =
-        SDL_CreateRGBSurface(0, new_width, new_height, 32, 0, 0, 0, 0);
+    // create a new image;
+    Image new_image = {
+        .height = new_height, .width = new_width, .pixels = NULL, .path = NULL
+    };
+    // assign memmory to the pixels
+    new_image.pixels = (Pixel **)calloc(new_image.height, sizeof(Pixel *));
+    for (unsigned int x = 0; x < new_image.height; ++x)
+    {
+        new_image.pixels[x] = (Pixel *)calloc(new_image.width, sizeof(Pixel));
+        if (new_image.pixels[x] == NULL)
+            errx(EXIT_FAILURE,
+                 "Error while allocating pixels pointers for the image");
+    }
+    // copy the path of the previous image
+    new_image.path = (char *)calloc(strlen(image->path) + 1, sizeof(char));
+    strcpy(new_image.path, image->path);
 
-    const unsigned int w1 = surface->w;
-    const unsigned int h1 = surface->h;
+    int w1 = image->width;
+    int h1 = image->height;
     // calculate the ratio between the new size and the old size
-    int x_ratio = (int)((w1 << 16) / new_width) + 1;
-    int y_ratio = (int)((h1 << 16) / new_height) + 1;
-    // double ratio_width = (double)surface->w / (double)new_width;
-    // double ratio_height = (double)surface->h / (double)new_height;
+    int j_ratio = (int)((w1 << 16) / new_width) + 1;
+    int i_ratio = (int)((h1 << 16) / new_height) + 1;
 
-    SDL_LockSurface(new_surface);
-    SDL_LockSurface(surface);
-
-    Uint32 *old_pixels = surface->pixels;
-    Uint32 *new_pixels = new_surface->pixels;
     // calculate the new pixels
-    int x2, y2;
+    int j2, i2;
     for (int i = 0; i < new_height; i++)
     {
         for (int j = 0; j < new_width; j++)
         {
-            x2 = ((j * x_ratio) >> 16);
-            y2 = ((i * y_ratio) >> 16);
-
-            new_pixels[i * new_width + j] = old_pixels[y2 * w1 + x2];
-
-            // calculate the position of the pixel in the old image
-            printf("i = %i   j = %i\n", i, j);
-            // int old_x = (int)(x * ratio_height);
-            // int old_y = (int)(y * ratio_width);
+            j2 = ((j * j_ratio) >> 16);
+            i2 = ((i * i_ratio) >> 16);
+            new_image.pixels[i][j] = image->pixels[i2][j2];
         }
     }
-    SDL_UnlockSurface(new_surface);
-    SDL_UnlockSurface(surface);
 
-    printf("NOW\n");
-    // return the new surface
-    return new_surface;
+    // return the new image
+    return new_image;
 }

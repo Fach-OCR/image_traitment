@@ -8,7 +8,7 @@
 #include "../../include/image_traitment/utilis_image.h"
 #include "../../include/image_traitment/gaussian_filter.h"
 #include "../../include/image_traitment/grid_detection.h"
-#include "../../include/image_traitment/houghtransform.h"
+#include "../../include/image_traitment/hough_transform.h"
 
 void draw_dot2(Image *image, Dot *dot, int size)
 {
@@ -35,20 +35,27 @@ int main(int argc, char **argv)
 
     // Import image
     SDL_Surface *surface = IMG_Load(argv[1]);
-    SDL_Surface *surface2 =
-        resize_surface(surface, surface->w / 2, surface->h / 2);
-    Image image = create_image(surface2, surface2->w, surface2->h);
-    SDL_FreeSurface(surface);
+    printf("Imported image of size %ix%i\n", surface->w, surface->h);
+    Image tmp_image = create_image(surface, surface->w, surface->h);
 
-    SDL_Surface *final_surface = create_surface(&image);
-    SDL_SaveBMP(final_surface, "lol.jpeg");
     // Create the name to save image
-    image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
-    image.path[0] = 'r';
-    image.path[1] = 'e';
-    image.path[2] = 's';
-    image.path[3] = '_';
-    strcat(image.path, argv[1]);
+    tmp_image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
+    tmp_image.path[0] = 'r';
+    tmp_image.path[1] = 'e';
+    tmp_image.path[2] = 's';
+    tmp_image.path[3] = '_';
+    strcat(tmp_image.path, argv[1]);
+
+    // Resize the image and free the others
+    int dim = 900;
+    int w = tmp_image.width;
+    int h = tmp_image.height;
+    int ratio = w > h ? w / h : h / w;
+    int new_h = w > h ? w / ratio : dim;
+    int new_w = h > w ? h / ratio : dim;
+    Image image = resize_image(&tmp_image, new_w, new_h);
+    SDL_FreeSurface(surface);
+    free_image(&tmp_image);
 
     // Preprocess
     surface_to_grayscale(&image);
@@ -64,9 +71,9 @@ int main(int argc, char **argv)
     edges(&image);
 
     // Compute Hough transform
-    int w = image.width;
-    int h = image.height;
-    int thresh = w > h ? w / 4 : h / 4;
+    w = image.width;
+    h = image.height;
+    int thresh = w > h ? w / 2 : h / 2;
 
     MyList all_lines = hough_transform(&image, thresh);
     MyList simplified_lines = simplify_lines(&all_lines, 50);
@@ -77,8 +84,6 @@ int main(int argc, char **argv)
     for (size_t i = 0; i < simplified_lines.length; ++i)
     {
         Line *l = get_value(&simplified_lines, i);
-        // printf("xstart: %i  ystart: %i  xend: %i, yend %i\n", l->xStart,
-        //        l->yStart, l->xEnd, l->yEnd);
         draw_line(&draw_image, l);
     }
 
@@ -89,12 +94,16 @@ int main(int argc, char **argv)
     }
 
     // Save the image
-    // SDL_Surface *final_surface = create_surface(&draw_image);
-    // SDL_SaveBMP(final_surface, image.path);
+    SDL_Surface *final_surface = create_surface(&draw_image);
+    SDL_SaveBMP(final_surface, image.path);
 
     // Free image and surface
     SDL_FreeSurface(final_surface);
-    freeImage(&image);
+    free_image(&image);
+    free_image(&draw_image);
+    free_list(&all_lines);
+    // free_list(&simplified_lines);
+    free_list(&dots);
 
     SDL_Quit();
 
