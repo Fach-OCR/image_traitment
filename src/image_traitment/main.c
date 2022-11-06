@@ -9,6 +9,8 @@
 #include "../../include/image_traitment/gaussian_filter.h"
 #include "../../include/image_traitment/grid_detection.h"
 #include "../../include/image_traitment/hough_transform.h"
+#include "../../include/image_traitment/blob.h"
+
 
 void draw_dot2(Image *image, Dot *dot, int size)
 {
@@ -50,9 +52,12 @@ int main(int argc, char **argv)
     int dim = 900;
     int w = tmp_image.width;
     int h = tmp_image.height;
-    int ratio = w > h ? w / h : h / w;
-    int new_h = w > h ? w / ratio : dim;
-    int new_w = h > w ? h / ratio : dim;
+    int rw = dim / w;
+    int rh = dim / h;
+    int new_h = rw > rh ? dim / rw : h;
+    int new_w = rh > rw ? dim / rh : w;
+
+    printf("new h = %i , new w = %i\n", new_h, new_w);
     Image image = resize_image(&tmp_image, new_w, new_h);
     SDL_FreeSurface(surface);
     free_image(&tmp_image);
@@ -61,23 +66,28 @@ int main(int argc, char **argv)
     surface_to_grayscale(&image);
     image_contrast(&image, 10);
     image_normalize_brightness(&image);
-    invert(&image);
     gaussian_blur(&image, 3);
 
     // Binarisation
     int otsuthresh = otsu(&image);
     apply_threshold(&image, otsuthresh);
     hysteris(&image);
+
     edges(&image);
 
-    // Compute Hough transform
+    MyList allblob = find_blob(&image);
+    printf("nb bolb = %lu\n", allblob.length);
+
+/*     // Compute Hough transform
     w = image.width;
     h = image.height;
-    int thresh = w > h ? w / 2 : h / 2;
+    int thresh = w > h ? w / 3 : h / 3;
 
     MyList all_lines = hough_transform(&image, thresh);
-    MyList simplified_lines = simplify_lines(&all_lines, 50);
-    MyList dots = find_intersections(&simplified_lines);
+    MyList simplified_lines = simplify_lines(&all_lines, 60);
+    printf("len simp = %li\n", simplified_lines.length);
+    MyList squares = find_squares(&simplified_lines, &image);
+    printf("square nb = %li", squares.length);
 
     Image draw_image = copy_image(&image);
 
@@ -87,13 +97,6 @@ int main(int argc, char **argv)
         draw_line(&draw_image, l);
     }
 
-    for (size_t i = 0; i < dots.length; ++i)
-    {
-        Dot *dot = get_value(&dots, i);
-        draw_dot2(&draw_image, dot, 6);
-    }
-
-    // Save the image
     SDL_Surface *final_surface = create_surface(&draw_image);
     SDL_SaveBMP(final_surface, image.path);
 
@@ -101,9 +104,14 @@ int main(int argc, char **argv)
     SDL_FreeSurface(final_surface);
     free_image(&image);
     free_image(&draw_image);
+
+    //    free_list(&dots);
+    free_list(&simplified_lines);
     free_list(&all_lines);
-    // free_list(&simplified_lines);
-    free_list(&dots);
+*/
+
+    SDL_Surface *final_surface = create_surface(&image);
+    SDL_SaveBMP(final_surface, image.path);
 
     SDL_Quit();
 

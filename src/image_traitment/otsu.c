@@ -91,5 +91,5 @@ void apply_threshold(Image *image, unsigned int threshold)
     Pixel **pixels = image->pixels;
     for (unsigned int i = 0; i < image->height; ++i)
         for (unsigned int j = 0; j < image->width; ++j)
-            set_all_pixel(image, i, j, pixels[i][j].r > threshold ? 0 : 255);
+            set_all_pixel(image, i, j, pixels[i][j].r > threshold ? 255 : 0);
 }

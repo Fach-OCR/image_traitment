@@ -50,6 +50,9 @@ MyList hough_transform(Image *image, int threshold)
                     double r =
                         (((double)j - center_x) * cos((double)t * DEG2RAD))
                         + (((double)i - center_y) * sin((double)t * DEG2RAD));
+                    if ((int)((round(r + hough_h) * 180.0)) + t
+                        >= _accu_h * _accu_w)
+                        continue;
                     _accu[(int)((round(r + hough_h) * 180.0)) + t]++;
                 }
             }
@@ -58,9 +61,9 @@ MyList hough_transform(Image *image, int threshold)
 
     MyList all_lines = { NULL, NULL, 0 };
 
-    for (int r = 0; r < _accu_h; r++)
+    for (int r = 0; r < _accu_h - 1; r++)
     {
-        for (int t = 0; t < _accu_w; t++)
+        for (int t = 0; t < _accu_w - 1; t++)
         {
             if ((int)_accu[(int)(r * _accu_w) + t] >= threshold)
             {
@@ -171,10 +174,10 @@ void draw_line(Image *image, Line *line)
 
     int err = dx + dy;
 
-    Dot d1 = { x0, y0 };
-    Dot d2 = { x1, y1 };
-    draw_dot(image, &d1, 7);
-    draw_dot(image, &d2, 7);
+    //    Dot d1 = { x0, y0 };
+    //  Dot d2 = { x1, y1 };
+    // draw_dot(image, &d1, 7);
+    // draw_dot(image, &d2, 7);
 
     while (1)
     {

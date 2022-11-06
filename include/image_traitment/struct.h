@@ -8,10 +8,6 @@
 
 #include "utilis_image.h"
 
-/**
- * @brief
- *
- */
 typedef struct Line {
   int xStart;
   int yStart;
@@ -19,10 +15,6 @@ typedef struct Line {
   int yEnd;
 } Line;
 
-/**
- * @brief
- *
- */
 typedef struct LineList {
   Line *lines;
   int len;
@@ -30,19 +22,11 @@ typedef struct LineList {
 
 } LineList;
 
-/**
- * @brief
- *
- */
 typedef struct Dot {
   int X;
   int Y;
 } Dot;
 
-/**
- * @brief
- *
- */
 typedef struct Square {
   Line top;
   Line bottom;
@@ -50,30 +34,16 @@ typedef struct Square {
   Line right;
 } Square;
 
-/**
- * @brief
- *
- */
 typedef struct SquareList {
   Square *squares;
   int len;
 } SquareList;
 
-/**
- * @brief
- *
- * @param x
- * @param y
- * @return unsigned int**
- */
-unsigned int **initMatrice(unsigned int x, unsigned int y);
+typedef struct Blob {
+    int length;
+    Dot *dots;
+} Blob;
 
-/**
- * @brief
- *
- * @param matrice
- * @param height
- */
-void freeMatrice(unsigned int **matrice, size_t height);
+
 
 #endif

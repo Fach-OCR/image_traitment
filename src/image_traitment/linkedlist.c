@@ -19,6 +19,15 @@
 
 #include <stdlib.h>
 
+void *Blob_tovptr(Blob blob)
+{
+    void *p = malloc(sizeof(Blob));
+    if (p == NULL)
+        errx(1, "Not enough memory");
+    *(Blob *)p = blob;
+    return p;
+}
+
 void *Dot_tovptr(Dot dot)
 {
     void *p = malloc(sizeof(Dot));
@@ -118,6 +127,7 @@ void append(MyList *list, void *value)
     }
     list->length++;
 }
+
 void prepend(MyList *list, void *value)
 {
     Node *node = initializeNode(value);
@@ -232,22 +242,4 @@ void free_list(MyList *list)
         free_node(tmp);
         tmp = n;
     }
-}
-
-// Display Node
-void printNode(Node node)
-{
-    printf("Node: %p\n", node.value);
-}
-
-// Display List
-void printMyList(MyList *list)
-{
-    Node *tmp = list->head;
-    printf("[");
-    for (; tmp->next != NULL; tmp = tmp->next)
-    {
-        printf("  %d ;", *((int *)tmp->value));
-    }
-    printf("  %d ]\n", *((int *)tmp->value));
 }

@@ -19,6 +19,7 @@ typedef struct {
   size_t length;
 } MyList;
 
+void *Blob_tovptr(Blob blob);
 void *Dot_tovptr(Dot dot);
 void *Line_tovptr(Line line);
 void *Square_tovptr(Square square);
@@ -44,10 +45,5 @@ void *removeAt(MyList *list, size_t index);
 // Freeing memory
 void free_node(Node *node);
 void free_list(MyList *list);
-
-// Display Node
-void printNode(Node node);
-// Display List
-void printMyList(MyList *list);
 
 #endif
