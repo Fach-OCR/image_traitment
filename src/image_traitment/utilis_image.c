@@ -129,8 +129,15 @@ Image copy_image(Image *image)
     strcpy(new_image.path, image->path);
 
     for (unsigned int i = 0; i < image->height; ++i)
+    {
         for (unsigned int j = 0; j < image->width; ++j)
-            new_image.pixels[i][j] = image->pixels[i][j];
+        {
+            Pixel p = { .r = image->pixels[i][j].r,
+                        .g = image->pixels[i][j].g,
+                        .b = image->pixels[i][j].b };
+            new_image.pixels[i][j] = p;
+        }
+    }
 
     return new_image;
 }
@@ -226,10 +233,10 @@ Image resize_image(Image *image, int new_width, int new_height)
         .height = new_height, .width = new_width, .pixels = NULL, .path = NULL
     };
     // assign memmory to the pixels
-    new_image.pixels = (Pixel **)calloc(new_image.height, sizeof(Pixel *));
-    for (unsigned int x = 0; x < new_image.height; ++x)
+    new_image.pixels = (Pixel **)calloc(new_height, sizeof(Pixel *));
+    for (int x = 0; x < new_height; ++x)
     {
-        new_image.pixels[x] = (Pixel *)calloc(new_image.width, sizeof(Pixel));
+        new_image.pixels[x] = (Pixel *)calloc(new_width, sizeof(Pixel));
         if (new_image.pixels[x] == NULL)
             errx(EXIT_FAILURE,
                  "Error while allocating pixels pointers for the image");
@@ -252,7 +259,10 @@ Image resize_image(Image *image, int new_width, int new_height)
         {
             j2 = ((j * j_ratio) >> 16);
             i2 = ((i * i_ratio) >> 16);
-            new_image.pixels[i][j] = image->pixels[i2][j2];
+            Pixel p = { .r = image->pixels[i2][j2].r,
+                        .g = image->pixels[i2][j2].g,
+                        .b = image->pixels[i2][j2].b };
+            new_image.pixels[i][j] = p;
         }
     }
 

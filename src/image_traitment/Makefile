@@ -1,7 +1,7 @@
 C = gcc -I../../include/
 CFLAGS = -Wall -Wextra -Werror -std=c99 `pkg-config --cflags sdl2 SDL2_image` -g
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
-LDFLAGS = #-fsanitize=address
+LDFLAGS = -fsanitize=address
 
 
 SRC =  $(shell find -name "*.c")

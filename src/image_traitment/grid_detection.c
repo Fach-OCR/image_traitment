@@ -78,7 +78,6 @@ MyList simplify_lines(MyList *all_lines, int gap)
     return new_lines;
 }
 
-
 Dot find_inter_line1(Line *line1, Line *line2, int width, int height)
 {
     Dot dot;
@@ -114,8 +113,6 @@ Dot find_inter_line1(Line *line1, Line *line2, int width, int height)
     dot.Y = -1;
     return dot;
 }
-
-
 
 Dot find_inter_line(Line *l1, Line *l2, int width, int height)
 {
@@ -183,7 +180,7 @@ MyList find_squares(MyList *all_lines, Image *image)
             {
                 if (k == j)
                     continue;
-//                printf("ta grosse race1\n");
+                //                printf("ta grosse race1\n");
                 Line *l3 = get_value(all_lines, k);
                 Dot dot2 = find_inter_line(l2, l3, w, h);
 

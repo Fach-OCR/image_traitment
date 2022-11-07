@@ -11,7 +11,6 @@
 #include "../../include/image_traitment/hough_transform.h"
 #include "../../include/image_traitment/blob.h"
 
-
 void draw_dot2(Image *image, Dot *dot, int size)
 {
     int width = image->width;
@@ -39,6 +38,7 @@ int main(int argc, char **argv)
     SDL_Surface *surface = IMG_Load(argv[1]);
     printf("Imported image of size %ix%i\n", surface->w, surface->h);
     Image tmp_image = create_image(surface, surface->w, surface->h);
+    SDL_FreeSurface(surface);
 
     // Create the name to save image
     tmp_image.path = (char *)calloc(strlen(argv[1]) + 5, sizeof(char));
@@ -59,7 +59,6 @@ int main(int argc, char **argv)
 
     printf("new h = %i , new w = %i\n", new_h, new_w);
     Image image = resize_image(&tmp_image, new_w, new_h);
-    SDL_FreeSurface(surface);
     free_image(&tmp_image);
 
     // Preprocess
@@ -72,46 +71,49 @@ int main(int argc, char **argv)
     int otsuthresh = otsu(&image);
     apply_threshold(&image, otsuthresh);
     hysteris(&image);
-
     edges(&image);
 
-    MyList allblob = find_blob(&image);
-    printf("nb bolb = %lu\n", allblob.length);
-
-/*     // Compute Hough transform
-    w = image.width;
-    h = image.height;
-    int thresh = w > h ? w / 3 : h / 3;
-
-    MyList all_lines = hough_transform(&image, thresh);
-    MyList simplified_lines = simplify_lines(&all_lines, 60);
-    printf("len simp = %li\n", simplified_lines.length);
-    MyList squares = find_squares(&simplified_lines, &image);
-    printf("square nb = %li", squares.length);
-
     Image draw_image = copy_image(&image);
+    MyList allblob = find_blob(&draw_image);
+    printf("nb bolb = %lu\n", allblob.length);
+    free_blob_list(&allblob);
 
-    for (size_t i = 0; i < simplified_lines.length; ++i)
-    {
-        Line *l = get_value(&simplified_lines, i);
-        draw_line(&draw_image, l);
-    }
+    /*     // Compute Hough transform
+        w = image.width;
+        h = image.height;
+        int thresh = w > h ? w / 3 : h / 3;
+
+        MyList all_lines = hough_transform(&image, thresh);
+        MyList simplified_lines = simplify_lines(&all_lines, 60);
+        printf("len simp = %li\n", simplified_lines.length);
+        MyList squares = find_squares(&simplified_lines, &image);
+        printf("square nb = %li", squares.length);
+
+
+        for (size_t i = 0; i < simplified_lines.length; ++i)
+        {
+            Line *l = get_value(&simplified_lines, i);
+            draw_line(&draw_image, l);
+        }
+
+        SDL_Surface *final_surface = create_surface(&draw_image);
+        SDL_SaveBMP(final_surface, image.path);
+
+        // Free image and surface
+        SDL_FreeSurface(final_surface);
+        free_image(&image);
+        free_image(&draw_image);
+
+        //    free_list(&dots);
+        free_list(&simplified_lines);
+        free_list(&all_lines);
+    */
 
     SDL_Surface *final_surface = create_surface(&draw_image);
     SDL_SaveBMP(final_surface, image.path);
-
-    // Free image and surface
-    SDL_FreeSurface(final_surface);
-    free_image(&image);
     free_image(&draw_image);
-
-    //    free_list(&dots);
-    free_list(&simplified_lines);
-    free_list(&all_lines);
-*/
-
-    SDL_Surface *final_surface = create_surface(&image);
-    SDL_SaveBMP(final_surface, image.path);
+    free_image(&image);
+    SDL_FreeSurface(final_surface);
 
     SDL_Quit();
 
