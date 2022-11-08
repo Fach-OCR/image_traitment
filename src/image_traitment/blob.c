@@ -1,7 +1,6 @@
-#include <stddef.h>
+#include <SDL2/SDL_keycode.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "../../include/image_traitment/linkedlist.h"
 #include "../../include/image_traitment/utilis_image.h"
@@ -78,6 +77,53 @@ MyList clear_blob(MyList *all_blob)
     }
 
     return cleared_blob;
+}
+
+/*
+ *res[0]: top left
+ *res[1]: top right
+ *res[2]: bot left
+ *res[3]: bot right
+ */
+Dot *find_corners(Blob *blob)
+{
+    Dot *dots = blob->dots;
+    int len = blob->length;
+    Dot top_left, top_right, bot_left, bot_right;
+    Dot d = dots[0];
+    top_left.X = top_right.X = bot_left.X = bot_right.X = d.X;
+    top_left.Y = top_right.Y = bot_left.Y = bot_right.Y = d.Y;
+    for (int i = 0; i < len; ++i)
+    {
+        Dot d = dots[i];
+        if (d.X <= top_left.X && d.Y >= top_left.Y)
+        {
+            top_left.X = d.X;
+            top_left.Y = d.Y;
+        }
+        else if (d.X >= top_right.X && d.Y >= top_right.Y)
+        {
+            top_right.X = d.X;
+            top_right.Y = d.Y;
+        }
+        else if (d.X <= bot_left.X && d.Y <= bot_left.Y)
+        {
+            bot_left.X = d.X;
+            bot_left.Y = d.Y;
+        }
+        else if (d.X >= bot_right.X && d.Y <= bot_right.Y)
+        {
+            bot_right.X = d.X;
+            bot_right.Y = d.Y;
+        }
+    }
+    Dot *res = (Dot *)calloc(4, sizeof(Dot));
+    res[0] = top_left;
+    res[1] = top_right;
+    res[2] = bot_left;
+    res[3] = bot_right;
+
+    return res;
 }
 
 void draw_blob(Image *image, MyList *all_blob)

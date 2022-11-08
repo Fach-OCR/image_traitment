@@ -40,10 +40,8 @@ typedef struct SquareList {
 } SquareList;
 
 typedef struct Blob {
-    int length;
-    Dot *dots;
+  int length;
+  Dot *dots;
 } Blob;
-
-
 
 #endif

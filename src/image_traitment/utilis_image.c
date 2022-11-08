@@ -226,8 +226,26 @@ void free_image(Image *image)
     free(image->pixels);
 }
 
-Image resize_image(Image *image, int new_width, int new_height)
+Image resize_image(Image *image, int dimension)
 {
+    int new_width = 0, new_height = 0;
+    if (image->height == image->width)
+    {
+        new_width = dimension;
+        new_height = dimension;
+    }
+    else if (image->height > image->width)
+    {
+        new_width = (int)((float)dimension
+                          * ((float)image->width / (float)image->height));
+        new_height = dimension;
+    }
+    else
+    {
+        new_width = dimension;
+        new_height = (int)((float)dimension
+                           * ((float)image->height / (float)image->width));
+    }
     // create a new image;
     Image new_image = {
         .height = new_height, .width = new_width, .pixels = NULL, .path = NULL

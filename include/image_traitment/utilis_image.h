@@ -33,5 +33,5 @@ void free_image(Image *image);
 
 Image copy_image(Image *image);
 
-Image resize_image(Image *image, int new_width, int new_height);
+Image resize_image(Image *image, int dimension);
 #endif

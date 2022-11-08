@@ -174,11 +174,6 @@ void draw_line(Image *image, Line *line)
 
     int err = dx + dy;
 
-    //    Dot d1 = { x0, y0 };
-    //  Dot d2 = { x1, y1 };
-    // draw_dot(image, &d1, 7);
-    // draw_dot(image, &d2, 7);
-
     while (1)
     {
         if (0 <= x0 && x0 < w && 0 <= y0 && y0 < h)

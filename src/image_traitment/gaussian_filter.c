@@ -36,7 +36,7 @@ void surface_to_grayscale(Image *image)
     }
 }
 
-void gaussian_blur(Image *image, int radius)
+double **build_gaussian_kernel(int radius)
 {
     double sigma = radius / 2.0 > 1.0 ? radius / 2.0 : 1.0;
     int kwidht = (2 * round(radius)) + 1;
@@ -63,6 +63,14 @@ void gaussian_blur(Image *image, int radius)
     for (int x = 0; x < kwidht; ++x)
         for (int y = 0; y < kwidht; ++y)
             kernel[x][y] /= sum;
+
+    return kernel;
+}
+
+void gaussian_blur(Image *image, int radius)
+{
+    int kwidht = (2 * round(radius)) + 1;
+    double **kernel = build_gaussian_kernel(radius);
 
     Image tmp_image = copy_image(image);
     for (unsigned int x = radius; x < image->height - radius; ++x)
