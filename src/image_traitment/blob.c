@@ -28,6 +28,15 @@ Blob copy_blob(Blob *blob)
     return res;
 }
 
+int manhattan_distance(Dot *d1, Dot *d2)
+{
+    int x1 = d1->X;
+    int x2 = d2->X;
+    int y1 = d1->Y;
+    int y2 = d2->Y;
+    return abs(x2 - x1) + abs(y2 - y1);
+}
+
 void rec_blob(Image *cimage, int i, int j, MyList *current_blob)
 {
     int w = cimage->width;
@@ -90,32 +99,16 @@ Dot *find_corners(Blob *blob)
     Dot *dots = blob->dots;
     int len = blob->length;
     Dot top_left, top_right, bot_left, bot_right;
-    Dot d = dots[0];
-    top_left.X = top_right.X = bot_left.X = bot_right.X = d.X;
-    top_left.Y = top_right.Y = bot_left.Y = bot_right.Y = d.Y;
+
+    int val_top_right = -1;
+    int index_top_right = -1;
+    int val_top_left = -1;
+    int index_top_left = -1;
+    int val_bot_right = -1;
+
     for (int i = 0; i < len; ++i)
     {
-        Dot d = dots[i];
-        if (d.X <= top_left.X && d.Y >= top_left.Y)
-        {
-            top_left.X = d.X;
-            top_left.Y = d.Y;
-        }
-        else if (d.X >= top_right.X && d.Y >= top_right.Y)
-        {
-            top_right.X = d.X;
-            top_right.Y = d.Y;
-        }
-        else if (d.X <= bot_left.X && d.Y <= bot_left.Y)
-        {
-            bot_left.X = d.X;
-            bot_left.Y = d.Y;
-        }
-        else if (d.X >= bot_right.X && d.Y <= bot_right.Y)
-        {
-            bot_right.X = d.X;
-            bot_right.Y = d.Y;
-        }
+        
     }
     Dot *res = (Dot *)calloc(4, sizeof(Dot));
     res[0] = top_left;
@@ -145,7 +138,7 @@ void draw_blob(Image *image, MyList *all_blob)
                 for (int j = -size; j < size; ++j)
                 {
                     if (x + i >= 0 && x + i < height && j + y >= 0
-                        && j + y < width)
+                            && j + y < width)
                         image->pixels[x + i][y + j].b = 255;
                 }
             }
