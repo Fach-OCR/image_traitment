@@ -1,6 +1,7 @@
 #include <SDL2/SDL_keycode.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "../../include/image_traitment/linkedlist.h"
 #include "../../include/image_traitment/utilis_image.h"
@@ -89,32 +90,30 @@ MyList clear_blob(MyList *all_blob)
 }
 
 /*
- *res[0]: top left
- *res[1]: top right
- *res[2]: bot left
- *res[3]: bot right
+ *res[0]: top left A
+ *res[1]: top right B
+ *res[2]: bot left D
+ *res[3]: bot right C
  */
 Dot *find_corners(Blob *blob)
 {
-    Dot *dots = blob->dots;
+ //   Dot *dots = blob->dots;
     int len = blob->length;
-    Dot top_left, top_right, bot_left, bot_right;
+//    Dot top_left, top_right, bot_left, bot_right;
 
-    int val_top_right = -1;
-    int index_top_right = -1;
-    int val_top_left = -1;
-    int index_top_left = -1;
-    int val_bot_right = -1;
-
+    //int dist_A = INT_MAX;
+    //int dist_B = INT_MAX;
+    //int dist_C = INT_MAX;
+    //int dist_D = INT_MAX;
     for (int i = 0; i < len; ++i)
     {
         
     }
     Dot *res = (Dot *)calloc(4, sizeof(Dot));
-    res[0] = top_left;
-    res[1] = top_right;
-    res[2] = bot_left;
-    res[3] = bot_right;
+//    res[0] = top_left;
+//    res[1] = top_right;
+//    res[2] = bot_left;
+//    res[3] = bot_right;
 
     return res;
 }
@@ -122,7 +121,7 @@ Dot *find_corners(Blob *blob)
 void draw_blob(Image *image, MyList *all_blob)
 {
     Node *n = all_blob->head;
-    int size = 2;
+    int size = 10;
     int width = image->width;
     int height = image->height;
     for (; n != NULL; n = n->next)

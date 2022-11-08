@@ -1,5 +1,5 @@
 C = gcc -I../../include/
-CFLAGS = -Wall -Wextra -Werror -std=c99 `pkg-config --cflags sdl2 SDL2_image` -g
+CFLAGS = -Wall -Wextra -Werror -std=c99 -pedantic-errors `pkg-config --cflags sdl2 SDL2_image` -g
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
 LDFLAGS = #-fsanitize=address
 
@@ -39,7 +39,6 @@ test:
 	./main image_05.jpeg && \
 	./main image_06.jpeg && \
 	mv image_0* images/
-	feh res_*
 
 
 format:
@@ -53,5 +52,6 @@ clean:
 	rm -rf $(BUILD)
 	$(RM) $(EXEC)
 	${RM} res_*
+	${RM} double_tresh_res_image_0* hysteris_res_image_0* non_max_res_image_0* sobel_res_image_0*
 	${RM} *.swp
 

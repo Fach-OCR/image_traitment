@@ -5,7 +5,6 @@
 #include "../../include/image_traitment/linkedlist.h"
 #include "../../include/image_traitment/otsu.h"
 #include "../../include/image_traitment/preprocess.h"
-#include "../../include/image_traitment/sobel.h"
 #include "../../include/image_traitment/utilis_image.h"
 #include "../../include/image_traitment/gaussian_filter.h"
 #include "../../include/image_traitment/grid_detection.h"
@@ -31,7 +30,7 @@ void draw_dot2(Image *image, Dot *dot, int size)
     }
 }
 
-void save_image(Image *image, char *name)
+void save_image2(Image *image, char *name)
 {
     SDL_Surface *final_surface = create_surface(image);
     char *res = malloc(strlen(name) + strlen(image->path) + 1);
@@ -71,14 +70,14 @@ int main(int argc, char **argv)
     image_contrast(&image, 10);
     image_normalize_brightness(&image);
     gaussian_blur(&image, 4);
+    
+    canny_edge_detection(&image);
 
     // Binarisation
-    int otsuthresh = otsu(&image);
-    apply_threshold(&image, otsuthresh);
-    hysteris(&image);
-    /*
-    edges(&image);
-
+//    int otsuthresh = otsu(&image);
+//    apply_threshold(&image, otsuthresh);
+//    hysteris(&image);
+  
     Image draw_image = copy_image(&image);
     MyList allblob = find_blob(&draw_image);
     printf("nb bolb = %lu\n", allblob.length);
@@ -101,37 +100,7 @@ int main(int argc, char **argv)
     free(corner_dot);
     free_blob_list(&allblob);
 
-         // Compute Hough transform
-        w = image.width;
-        h = image.height;
-        int thresh = w > h ? w / 3 : h / 3;
-
-        MyList all_lines = hough_transform(&image, thresh);
-        MyList simplified_lines = simplify_lines(&all_lines, 60);
-        printf("len simp = %li\n", simplified_lines.length);
-        MyList squares = find_squares(&simplified_lines, &image);
-        printf("square nb = %li", squares.length);
-
-
-        for (size_t i = 0; i < simplified_lines.length; ++i)
-        {
-            Line *l = get_value(&simplified_lines, i);
-            draw_line(&draw_image, l);
-        }
-
-        SDL_Surface *final_surface = create_surface(&draw_image);
-        SDL_SaveBMP(final_surface, image.path);
-
-        // Free image and surface
-        SDL_FreeSurface(final_surface);
-        free_image(&image);
-        free_image(&draw_image);
-
-        //    free_list(&dots);
-        free_list(&simplified_lines);
-        free_list(&all_lines);
-    */
-    save_image(&image, "");
+    save_image2(&image, "");
     free_image(&image);
 
     SDL_Quit();
