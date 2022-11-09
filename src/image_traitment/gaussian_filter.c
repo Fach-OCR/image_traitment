@@ -14,7 +14,7 @@
  * =====================================================================================
  */
 
-#include "../../include/image_traitment/utilis_image.h"
+#include "../../include/image_traitment/gaussian_filter.h"
 
 void surface_to_grayscale(Image *image)
 {

@@ -1,10 +1,4 @@
-#include <SDL2/SDL_keycode.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-
-#include "../../include/image_traitment/linkedlist.h"
-#include "../../include/image_traitment/utilis_image.h"
+#include "../../include/image_traitment/blob.h"
 
 void free_blob_list(MyList *list)
 {
@@ -60,7 +54,7 @@ void rec_blob(Image *cimage, int i, int j, MyList *current_blob)
     }
 }
 
-MyList clear_blob(MyList *all_blob)
+MyList clear_blob(MyList *all_blob, int *index_max)
 {
     MyList cleared_blob = { NULL, NULL, 0 };
     Node *n = all_blob->head;
@@ -70,7 +64,6 @@ MyList clear_blob(MyList *all_blob)
     {
         Blob *tmp_blob = (Blob *)n->value;
         average += tmp_blob->length;
-        // printf("nb %i size = %i\n", i, tmp_blob->length);
     }
     average /= all_blob->length;
 
@@ -86,6 +79,17 @@ MyList clear_blob(MyList *all_blob)
         }
     }
 
+    int max = 0;
+    for (size_t i = 0; i < cleared_blob.length; ++i)
+    {
+        Blob *tmp_blob = get_value(&cleared_blob, i);
+        if (tmp_blob->length > max)
+        {
+            max = tmp_blob->length;
+            *index_max = (int)i;
+        }
+    }
+
     return cleared_blob;
 }
 
@@ -95,25 +99,59 @@ MyList clear_blob(MyList *all_blob)
  *res[2]: bot left D
  *res[3]: bot right C
  */
-Dot *find_corners(Blob *blob)
+Dot *find_corners(Blob *blob, Image *image)
 {
- //   Dot *dots = blob->dots;
     int len = blob->length;
-//    Dot top_left, top_right, bot_left, bot_right;
+    int w = image->width;
+    int h = image->height;
+    Dot top_left, top_right, bot_left, bot_right;
 
-    //int dist_A = INT_MAX;
-    //int dist_B = INT_MAX;
-    //int dist_C = INT_MAX;
-    //int dist_D = INT_MAX;
+    int dist_A = INT_MAX;
+    Dot dot_A = { .X = 0, .Y = h };
+    int dist_B = INT_MAX;
+    Dot dot_B = { .X = w, .Y = h };
+    int dist_C = INT_MAX;
+    Dot dot_C = { .X = w, .Y = 0 };
+    int dist_D = INT_MAX;
+    Dot dot_D = { .X = 0, .Y = 0 };
+    int tmp_dist;
     for (int i = 0; i < len; ++i)
     {
-        
+        Dot *d = blob->dots;
+        tmp_dist = manhattan_distance(d, &dot_A);
+        if (tmp_dist < dist_A)
+        {
+            top_left.X = d->X;
+            top_left.Y = d->Y;
+            dist_A = tmp_dist;
+        }
+        tmp_dist = manhattan_distance(d, &dot_B);
+        if (tmp_dist < dist_B)
+        {
+            top_right.X = d->X;
+            top_right.Y = d->Y;
+            dist_B = tmp_dist;
+        }
+        tmp_dist = manhattan_distance(d, &dot_C);
+        if (tmp_dist < dist_C)
+        {
+            bot_right.X = d->X;
+            bot_right.Y = d->Y;
+            dist_C = tmp_dist;
+        }
+        tmp_dist = manhattan_distance(d, &dot_D);
+        if (tmp_dist < dist_D)
+        {
+            bot_left.X = d->X;
+            bot_left.Y = d->Y;
+            dist_C = tmp_dist;
+        }
     }
     Dot *res = (Dot *)calloc(4, sizeof(Dot));
-//    res[0] = top_left;
-//    res[1] = top_right;
-//    res[2] = bot_left;
-//    res[3] = bot_right;
+    res[0] = top_left;
+    res[1] = top_right;
+    res[2] = bot_right;
+    res[3] = bot_left;
 
     return res;
 }
@@ -137,7 +175,7 @@ void draw_blob(Image *image, MyList *all_blob)
                 for (int j = -size; j < size; ++j)
                 {
                     if (x + i >= 0 && x + i < height && j + y >= 0
-                            && j + y < width)
+                        && j + y < width)
                         image->pixels[x + i][y + j].b = 255;
                 }
             }
@@ -178,10 +216,18 @@ MyList find_blob(Image *image)
             append(&all_blob, Blob_tovptr(final_blob));
         }
     }
-    MyList cleared_blob = clear_blob(&all_blob);
+    int index_max;
+    MyList cleared_blob = clear_blob(&all_blob, &index_max);
     free_blob_list(&all_blob);
     free_image(&cimage);
     draw_blob(image, &cleared_blob);
+    Dot *corners = find_corners(get_value(&cleared_blob, index_max), image);
+    for (int i = 0; i < 4; ++i)
+    {
+        draw_dot(image, &corners[i], 6);
+    }
+
+    free(corners);
 
     return cleared_blob;
 }

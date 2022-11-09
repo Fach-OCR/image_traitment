@@ -15,19 +15,13 @@
  *
  * =====================================================================================
  */
-#include <math.h>
-#include <stdlib.h>
-#include "../../include/image_traitment/utilis_image.h"
-
-#ifndef M_PI
-#    define M_PI 3.14159265359
-#endif
+#include "../../include/image_traitment/canny.h"
 
 int Gx[3][3] = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
 
 int Gy[3][3] = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
 
-void sobel(Image *image, int Gx, int Gy, int i, int j, double **theta, int* max)
+void sobel(Image *image, int Gx, int Gy, int i, int j, double **theta, int *max)
 {
     int n = sqrt(Gx * Gx + Gy * Gy);
     if (n > *max)
@@ -75,8 +69,8 @@ double **sobel_filter(Image *image)
     }
     for (int i = 0; i < height; ++i)
         for (int j = 0; j < width; ++j)
-            set_all_pixel(image, i, j, (sobel_image.pixels[i][j].r * 255) / max);
-
+            set_all_pixel(image, i, j,
+                          (sobel_image.pixels[i][j].r * 255) / max);
 
     free_image(&sobel_image);
     return theta;
@@ -114,7 +108,6 @@ void hysteris(Image *image)
 
     free_image(&tmp_image);
 }
-
 
 void non_max_suppression(Image *image, double **D)
 {
@@ -180,6 +173,10 @@ void non_max_suppression(Image *image, double **D)
                 set_all_pixel(image, i, j, 0);
         }
     }
+    free_image(&cimage);
+    for (int i = 0; i < height; ++i)
+        free(angle[i]);
+    free(angle);
 }
 
 void double_threshold(Image *image)
@@ -194,8 +191,8 @@ void double_threshold(Image *image)
             if (pixels[i][j].r > max)
                 max = pixels[i][j].r;
 
-    double high_tresh = max * 0.16;
-    double low_tresh = high_tresh * 0.08;
+    double high_tresh = max * HIGH_RATIO;
+    double low_tresh = high_tresh * LOW_RATIO;
 
     for (int i = 0; i < h; ++i)
     {
@@ -211,27 +208,21 @@ void double_threshold(Image *image)
     }
 }
 
-void save_image(Image *image, char *name)
-{
-    SDL_Surface *final_surface = create_surface(image);
-    char *res = malloc(strlen(name) + strlen(image->path) + 1);
-    strcpy(res, name);
-    strcat(res, image->path);
-    SDL_SaveBMP(final_surface, res);
-    SDL_FreeSurface(final_surface);
-    free(res);
-}
-
 void canny_edge_detection(Image *image)
 {
     double **theta = sobel_filter(image);
     save_image(image, "sobel_");
+
     non_max_suppression(image, theta);
     save_image(image, "non_max_");
+
     double_threshold(image);
     save_image(image, "double_tresh_");
+
     hysteris(image);
     save_image(image, "hysteris_");
 
+    for (unsigned int i = 0; i < image->height; ++i)
+        free(theta[i]);
     free(theta);
 }

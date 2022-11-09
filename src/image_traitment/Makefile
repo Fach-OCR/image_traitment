@@ -31,7 +31,7 @@ valim:
 	valgrind --leak-check=full --show-leak-kinds=all -s ./main image_01.jpeg
 
 test:
-	mv images/* .
+	-mv images/* .
 	./main image_01.jpeg && \
 	./main image_02.jpeg && \
 	./main image_03.jpeg && \
@@ -39,6 +39,7 @@ test:
 	./main image_05.jpeg && \
 	./main image_06.jpeg && \
 	mv image_0* images/
+	feh *.jpeg
 
 
 format:
@@ -52,6 +53,6 @@ clean:
 	rm -rf $(BUILD)
 	$(RM) $(EXEC)
 	${RM} res_*
-	${RM} double_tresh_res_image_0* hysteris_res_image_0* non_max_res_image_0* sobel_res_image_0* gaussian_blur_res_i* gray_scale_res_ima* brightness_res_im* contrast_res_ima*
+	${RM} double_tresh_res_image_0* hysteris_res_image_0* non_max_res_image_0* sobel_res_image_0* gaussian_blur_res_i* gray_scale_res_ima* brightness_res_im* contrast_res_ima* res_hough_res_ima*
 	${RM} *.swp
 

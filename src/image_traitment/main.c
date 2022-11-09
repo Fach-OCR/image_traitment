@@ -12,33 +12,36 @@
 #include "../../include/image_traitment/blob.h"
 #include "../../include/image_traitment/canny.h"
 
-void draw_dot2(Image *image, Dot *dot, int size)
+void compute_hough(Image *image)
 {
-    int width = image->width;
-    int height = image->height;
-    int x = dot->X;
-    int y = dot->Y;
-    for (int i = -size; i < size; ++i)
+    Image draw_image_hough = copy_image(image);
+    int hough_threshold =
+        image->width > image->height ? image->width / 4 : image->height / 4;
+
+    MyList lines = hough_transform(image, hough_threshold);
+    MyList simplified_lines = simplify_lines(&lines, 40);
+
+    for (size_t i = 0; i < simplified_lines.length; ++i)
     {
-        for (int j = -size; j < size; ++j)
-        {
-            if (x + i >= 0 && x + i < height && j + y >= 0 && j + y < width)
-            {
-                image->pixels[x + i][y + j].r = 255;
-            }
-        }
+        Line *l = get_value(&simplified_lines, i);
+        draw_line(&draw_image_hough, l);
     }
+
+    free_list(&lines);
+    free_list(&simplified_lines);
+    save_image(&draw_image_hough, "res_hough_");
+    free_image(&draw_image_hough);
 }
 
-void save_image2(Image *image, char *name)
+void compute_blob(Image *image)
 {
-    SDL_Surface *final_surface = create_surface(image);
-    char *res = malloc(strlen(name) + strlen(image->path) + 1);
-    strcpy(res, name);
-    strcat(res, image->path);
-    SDL_SaveBMP(final_surface, res);
-    SDL_FreeSurface(final_surface);
-    free(res);
+    Image draw_image_blob = copy_image(image);
+    MyList allblob = find_blob(&draw_image_blob);
+    printf("nb bolb = %lu\n", allblob.length);
+    free_blob_list(&allblob);
+
+    save_image(&draw_image_blob, "res_blob_");
+    free_image(&draw_image_blob);
 }
 
 int main(int argc, char **argv)
@@ -67,45 +70,20 @@ int main(int argc, char **argv)
 
     // Preprocess
     surface_to_grayscale(&image);
-    save_image2(&image, "gray_scale_");
+    save_image(&image, "gray_scale_");
     image_contrast(&image, 12);
-    save_image2(&image, "contrast_");
+    save_image(&image, "contrast_");
     image_normalize_brightness(&image);
-    save_image2(&image, "brightness_");
+    save_image(&image, "brightness_");
     gaussian_blur(&image, 4);
-    save_image2(&image, "gaussian_blur_");
+    save_image(&image, "gaussian_blur_");
 
     canny_edge_detection(&image);
 
-    // Binarisation
-//    int otsuthresh = otsu(&image);
-//    apply_threshold(&image, otsuthresh);
-//    hysteris(&image);
+    compute_blob(&image);
+    //    compute_hough(&image);
 
-    Image draw_image = copy_image(&image);
-    MyList allblob = find_blob(&draw_image);
-    printf("nb bolb = %lu\n", allblob.length);
-    int max = 0;
-    int index = 0;
-    for (size_t i = 0; i < allblob.length; ++i)
-    {
-        Blob *b = get_value(&allblob, i);
-        if (b->length > max)
-        {
-            max = b->length;
-            index = i;
-        }
-    }
-    Dot *corner_dot = find_corners((Blob*)get_value(&allblob, index));
-    for (int i = 0; i < 4; ++i)
-    {
-        draw_dot2(&draw_image, &corner_dot[i], 10);
-    }
-    free(corner_dot);
-    free_blob_list(&allblob);
-
-    save_image2(&image, "");
-    save_image2(&draw_image, "res_blob_");
+    save_image(&image, "");
     free_image(&image);
 
     SDL_Quit();

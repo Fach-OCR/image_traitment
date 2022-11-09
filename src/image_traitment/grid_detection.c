@@ -16,11 +16,7 @@
  * =====================================================================================
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "../../include/image_traitment/linkedlist.h"
-#include "../../include/image_traitment/utilis_image.h"
+#include "../../include/image_traitment/grid_detection.h"
 
 int line_equal(Line *l1, Line *l2)
 {

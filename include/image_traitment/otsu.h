@@ -5,6 +5,6 @@
 
 int otsu(Image *image);
 
-void apply_threshold(Image *image, int threshold);
+void apply_threshold(Image *image, unsigned int threshold);
 
 #endif

@@ -15,13 +15,7 @@
  *
  * =====================================================================================
  */
-#include <math.h>
-#include <stdlib.h>
-
-#include "../../include/image_traitment/linkedlist.h"
-#include "../../include/image_traitment/utilis_image.h"
-
-#define DEG2RAD 0.017453293f
+#include "../../include/image_traitment/hough_transform.h"
 
 void draw_line(Image *image, Line *line);
 
@@ -135,24 +129,6 @@ MyList hough_transform(Image *image, int threshold)
 
     free(_accu);
     return all_lines;
-}
-
-void draw_dot(Image *image, Dot *dot, int size)
-{
-    int width = image->width;
-    int height = image->height;
-    int x = dot->X;
-    int y = dot->Y;
-    for (int i = -size; i < size; ++i)
-    {
-        for (int j = -size; j < size; ++j)
-        {
-            if (x + i >= 0 && x + i < height && j + y >= 0 && j + y < width)
-            {
-                image->pixels[x + i][y + j].g = 255;
-            }
-        }
-    }
 }
 
 void draw_line(Image *image, Line *line)

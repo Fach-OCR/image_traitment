@@ -17,8 +17,6 @@
  */
 #include "../../include/image_traitment/linkedlist.h"
 
-#include <stdlib.h>
-
 void *Blob_tovptr(Blob blob)
 {
     void *p = malloc(sizeof(Blob));
