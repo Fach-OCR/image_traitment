@@ -67,17 +67,21 @@ int main(int argc, char **argv)
 
     // Preprocess
     surface_to_grayscale(&image);
-    image_contrast(&image, 10);
+    save_image2(&image, "gray_scale_");
+    image_contrast(&image, 12);
+    save_image2(&image, "contrast_");
     image_normalize_brightness(&image);
+    save_image2(&image, "brightness_");
     gaussian_blur(&image, 4);
-    
+    save_image2(&image, "gaussian_blur_");
+
     canny_edge_detection(&image);
 
     // Binarisation
 //    int otsuthresh = otsu(&image);
 //    apply_threshold(&image, otsuthresh);
 //    hysteris(&image);
-  
+
     Image draw_image = copy_image(&image);
     MyList allblob = find_blob(&draw_image);
     printf("nb bolb = %lu\n", allblob.length);
@@ -101,6 +105,7 @@ int main(int argc, char **argv)
     free_blob_list(&allblob);
 
     save_image2(&image, "");
+    save_image2(&draw_image, "res_blob_");
     free_image(&image);
 
     SDL_Quit();

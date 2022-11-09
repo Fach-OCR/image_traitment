@@ -1,4 +1,4 @@
-C = gcc -I../../include/
+CC = gcc -I../../include/
 CFLAGS = -Wall -Wextra -Werror -std=c99 -pedantic-errors `pkg-config --cflags sdl2 SDL2_image` -g
 LDLIBS = `pkg-config --libs sdl2 SDL2_image` -lSDL2 -lm
 LDFLAGS = #-fsanitize=address
@@ -52,6 +52,6 @@ clean:
 	rm -rf $(BUILD)
 	$(RM) $(EXEC)
 	${RM} res_*
-	${RM} double_tresh_res_image_0* hysteris_res_image_0* non_max_res_image_0* sobel_res_image_0*
+	${RM} double_tresh_res_image_0* hysteris_res_image_0* non_max_res_image_0* sobel_res_image_0* gaussian_blur_res_i* gray_scale_res_ima* brightness_res_im* contrast_res_ima*
 	${RM} *.swp
 

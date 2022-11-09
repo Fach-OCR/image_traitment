@@ -121,7 +121,7 @@ Dot *find_corners(Blob *blob)
 void draw_blob(Image *image, MyList *all_blob)
 {
     Node *n = all_blob->head;
-    int size = 10;
+    int size = 3;
     int width = image->width;
     int height = image->height;
     for (; n != NULL; n = n->next)
