@@ -117,33 +117,33 @@ Dot *find_corners(Blob *blob, Image *image)
     int tmp_dist;
     for (int i = 0; i < len; ++i)
     {
-        Dot *d = blob->dots;
-        tmp_dist = manhattan_distance(d, &dot_A);
+        Dot d = blob->dots[i];
+        tmp_dist = manhattan_distance(&d, &dot_A);
         if (tmp_dist < dist_A)
         {
-            top_left.X = d->X;
-            top_left.Y = d->Y;
+            top_left.X = d.X;
+            top_left.Y = d.Y;
             dist_A = tmp_dist;
         }
-        tmp_dist = manhattan_distance(d, &dot_B);
+        tmp_dist = manhattan_distance(&d, &dot_B);
         if (tmp_dist < dist_B)
         {
-            top_right.X = d->X;
-            top_right.Y = d->Y;
+            top_right.X = d.X;
+            top_right.Y = d.Y;
             dist_B = tmp_dist;
         }
-        tmp_dist = manhattan_distance(d, &dot_C);
+        tmp_dist = manhattan_distance(&d, &dot_C);
         if (tmp_dist < dist_C)
         {
-            bot_right.X = d->X;
-            bot_right.Y = d->Y;
+            bot_right.X = d.X;
+            bot_right.Y = d.Y;
             dist_C = tmp_dist;
         }
-        tmp_dist = manhattan_distance(d, &dot_D);
+        tmp_dist = manhattan_distance(&d, &dot_D);
         if (tmp_dist < dist_D)
         {
-            bot_left.X = d->X;
-            bot_left.Y = d->Y;
+            bot_left.X = d.X;
+            bot_left.Y = d.Y;
             dist_C = tmp_dist;
         }
     }
@@ -159,7 +159,7 @@ Dot *find_corners(Blob *blob, Image *image)
 void draw_blob(Image *image, MyList *all_blob)
 {
     Node *n = all_blob->head;
-    int size = 3;
+    int size = 1;
     int width = image->width;
     int height = image->height;
     for (; n != NULL; n = n->next)
@@ -221,7 +221,11 @@ MyList find_blob(Image *image)
     free_blob_list(&all_blob);
     free_image(&cimage);
     draw_blob(image, &cleared_blob);
-    Dot *corners = find_corners(get_value(&cleared_blob, index_max), image);
+    printf("%zu\n", cleared_blob.length);
+
+    Blob *biggest_blob = get_value(&cleared_blob, index_max);
+    printf("%d\n", biggest_blob->length);
+    Dot *corners = find_corners(biggest_blob, image);
     for (int i = 0; i < 4; ++i)
     {
         draw_dot(image, &corners[i], 6);

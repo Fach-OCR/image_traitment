@@ -193,7 +193,6 @@ void double_threshold(Image *image)
 
     double high_tresh = max * HIGH_RATIO;
     double low_tresh = high_tresh * LOW_RATIO;
-
     for (int i = 0; i < h; ++i)
     {
         for (int j = 0; j < w; ++j)

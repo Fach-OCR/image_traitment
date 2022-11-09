@@ -11,6 +11,7 @@
 #include "../../include/image_traitment/hough_transform.h"
 #include "../../include/image_traitment/blob.h"
 #include "../../include/image_traitment/canny.h"
+#include "../../include/image_traitment/homographic_transform.h"
 
 void compute_hough(Image *image)
 {
